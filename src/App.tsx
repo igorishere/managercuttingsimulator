@@ -9,6 +9,7 @@ const [axis,setAxis] = useState("");
 const [displacement,setDisplacement] = useState(""); 
 const [startPosition,setStartPosition] = useState(null);
 const [lastCommand,setlastCommand] = useState(new Command());
+const [axisFirstCut,setAxisFirstCut] = useState("");
 
 const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -24,6 +25,7 @@ useEffect(()=>{
   context.lineWidth = 3;
   
   setStartPosition({X: 0,Y:0});
+  setAxisFirstCut("");
 },[]);
 
 function handleSubmit(params: React.FormEvent<Element>)
@@ -101,10 +103,31 @@ function drawLine(context: CanvasRenderingContext2D, start: IPosition,end: IPosi
     setStartPosition({X:0,Y:0});
   }
 
+  function handleAxisFirstCutChange(value: string): void {
+    if(value === "x" || value === "y"){
+      setAxisFirstCut(value);
+    }
+  }
+
   return (
     <div id='container' className='container'>
     <canvas id='canvas' ref={canvasRef}></canvas>
     <form onSubmit={(e) => handleSubmit(e)}>
+
+    {
+      axisFirstCut === "" || axisFirstCut === undefined ? 
+      (
+      <>
+        <p>Axis first cut:</p>
+        <select onChange={(e) => handleAxisFirstCutChange(e.target.value)}>
+          <option value="none">none</option>
+          <option value="x">Horizontal</option>
+          <option value="y">Vertical</option>
+        </select>
+      </>
+      ) : (<></>)
+
+    }
       <p>Displacement:</p>
       <input type="number" name='displacement' value={displacement} onChange={(e) => setDisplacement(e.target.value)}></input>
 
