@@ -8,12 +8,16 @@ export default class Turn implements ITurn{
     usedDisplacement: number;
     startPoint: IPosition;
     axis: string;
+    width: number;
+    height: number;
 
-    constructor(index?: number, maxAcceptableDisplacement?: number, startPoint?: IPosition, axis?: string){
+    constructor(index: number, maxAcceptableDisplacement: number, startPoint: IPosition, axis: string,width: number,height:number){
         this.index = index !== null ? index : null;
         this.maxAcceptableDisplacement = maxAcceptableDisplacement !== null ? maxAcceptableDisplacement : null;
         this.startPoint = startPoint !== null ? startPoint : null;
         this.axis = axis;
+        this.width = width;
+        this.height = height;
         this.usedDisplacement = 0;
     }
     
