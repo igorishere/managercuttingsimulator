@@ -11,3 +11,17 @@
     width: 100%;
     height: 100%;
 }
+
+.boardFooter{
+    display: flex;
+    justify-content: space-between;
+}
+
+#feedbackMessage{
+    color:#e1e1e1;
+}
+
+#form{
+    display: flex;
+    flex-direction: column;
+}

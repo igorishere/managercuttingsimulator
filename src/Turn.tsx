@@ -23,5 +23,6 @@ export default class Turn implements ITurn{
     
     public updateUsedDisplacement(displacement:number): void {
         this.usedDisplacement = this.usedDisplacement + displacement;
+        this.maxAcceptableDisplacement = this.maxAcceptableDisplacement - displacement;
     }
 }

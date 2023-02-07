@@ -13,6 +13,7 @@ const [phaseNumber,setPhaseNumber] = useState("");
 const [displacement,setDisplacement] = useState(""); 
 const [startPosition,setStartPosition] = useState(null);
 const [axisFirstCut,setAxisFirstCut] = useState("");
+const [feedbackMessage,setFeedbackMessage] = useState("");
 
 const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -42,6 +43,7 @@ function handleSubmit(params: React.FormEvent<Element>)
    let context = canvas.getContext("2d");
    let choosedDisplacement = parseInt(displacement);
    let choosedPhaseNumber = parseInt(phaseNumber);
+   setFeedbackMessage("");
 
    var turn = managePhases(choosedPhaseNumber);
 
@@ -57,8 +59,20 @@ function handleSubmit(params: React.FormEvent<Element>)
     Y: 0
   }
 
+  var {startPoint,usedDisplacement, maxAcceptableDisplacement} = turn;
+
+  if(choosedDisplacement > maxAcceptableDisplacement){
+
+     var feedbackMessage = maxAcceptableDisplacement <= 0 
+     ? "There´s no free space to execute a new command."
+     : `Invalid command. The command displacement must be lesser than ${maxAcceptableDisplacement}`;
+    
+
+    setFeedbackMessage(feedbackMessage);
+    return;
+  }
+
    if(turn.cutAxis == "x"){
-     var {startPoint,usedDisplacement} = turn;
      var positionAxisY = startPoint.Y + usedDisplacement + choosedDisplacement; 
    
      start.X = startPoint.X;
@@ -70,7 +84,7 @@ function handleSubmit(params: React.FormEvent<Element>)
   }
 
   if(turn.cutAxis == "y"){
-    var {startPoint,usedDisplacement} = turn;
+    // var {startPoint,usedDisplacement,maxAcceptableDisplacement} = turn;
     var positionAxisX = startPoint.X + usedDisplacement + choosedDisplacement; 
      
      start.X = positionAxisX;
@@ -107,6 +121,7 @@ function drawLine(context: CanvasRenderingContext2D, start: IPosition,end: IPosi
     setTurns(new Array<Turn>());
     lastDisplacementAxisX = canvas.width;
     lastDisplacementAxisY = canvas.height;
+    setFeedbackMessage("");
   }
 
   function handleAxisFirstCutChange(value: string): void {
@@ -173,7 +188,7 @@ function drawLine(context: CanvasRenderingContext2D, start: IPosition,end: IPosi
         height = lastDisplacementAxisY;
       }
 
-      currentPhase = new Turn(phaseNumber,lastDisplacementAxisY,startPoint,oppositeAxis(previousPhase.cutAxis),width,height);
+      currentPhase = new Turn(phaseNumber,maxAcceptableDisplacement,startPoint,oppositeAxis(previousPhase.cutAxis),width,height);
 
       var currentTurns = turns;
       currentTurns.push(currentPhase);
@@ -189,31 +204,44 @@ function drawLine(context: CanvasRenderingContext2D, start: IPosition,end: IPosi
   return (
     <div id='container' className='container'>
     <canvas id='canvas' ref={canvasRef}></canvas>
-    <form onSubmit={(e) => handleSubmit(e)}>
-
+    <div className='boardFooter'>
+    <form onSubmit={(e) => handleSubmit(e)} id="form">
     {
-      axisFirstCut === "" || axisFirstCut === undefined ? 
-      (
-      <>
-        <p>Axis first cut:</p>
-        <select onChange={(e) => handleAxisFirstCutChange(e.target.value)}>
-          <option value="none">none</option>
-          <option value="x">Horizontal</option>
-          <option value="y">Vertical</option>
-        </select>
-      </>
-      ) : (<></>)
+    axisFirstCut === "" || axisFirstCut === undefined ? 
+    (
+    <>
+      <p>Axis first cut:</p>
+      <select onChange={(e) => handleAxisFirstCutChange(e.target.value)}>
+        <option value="none">none</option>
+        <option value="x">Horizontal</option>
+        <option value="y">Vertical</option>
+      </select>
+    </>
+    ) : (<></>)
 
     }
-      <p>Displacement:</p>
-      <input type="number" name='displacement' value={displacement} onChange={(e) => setDisplacement(e.target.value)}></input>
+    <p>Displacement:</p>
+    <input type="number" name='displacement' value={displacement} onChange={(e) => setDisplacement(e.target.value)}></input>
 
-      <p>Phase:</p>
-      <input type="text" name='phase' value={phaseNumber} onChange={(e) => setPhaseNumber(e.target.value)}></input>
+    <p>Phase:</p>
+    <input type="text" name='phase' value={phaseNumber} onChange={(e) => setPhaseNumber(e.target.value)}></input>
 
-      <button type='submit'>Send</button>
-    </form>
+    <button type='submit'>Send</button>
+
+    {
+    axisFirstCut === "" || axisFirstCut === undefined ? 
+    (
+    <> 
+    </>
+    ) : 
+    (
     <button onClick={e => clearCanvas(e)}>Clear board</button>
+    )
+
+    } 
+    </form>
+    <p id="feedbackMessage">{feedbackMessage}</p>
+    </div>
     </div>
   );
 }
