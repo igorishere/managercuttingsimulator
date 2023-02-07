@@ -7,7 +7,7 @@ export default class Turn implements ITurn{
     maxAcceptableDisplacement: number;
     usedDisplacement: number;
     startPoint: IPosition;
-    axis: string;
+    cutAxis: string;
     width: number;
     height: number;
 
@@ -15,7 +15,7 @@ export default class Turn implements ITurn{
         this.index = index !== null ? index : null;
         this.maxAcceptableDisplacement = maxAcceptableDisplacement !== null ? maxAcceptableDisplacement : null;
         this.startPoint = startPoint !== null ? startPoint : null;
-        this.axis = axis;
+        this.cutAxis = axis;
         this.width = width;
         this.height = height;
         this.usedDisplacement = 0;

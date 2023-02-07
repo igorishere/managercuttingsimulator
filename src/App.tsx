@@ -57,7 +57,19 @@ function handleSubmit(params: React.FormEvent<Element>)
     Y: 0
   }
 
-   if(turn.axis == "y"){
+   if(turn.cutAxis == "x"){
+     var {startPoint,usedDisplacement} = turn;
+     var positionAxisY = startPoint.Y + usedDisplacement + choosedDisplacement; 
+   
+     start.X = startPoint.X;
+     start.Y = positionAxisY;
+   
+     end.X = startPoint.X + turn.width;
+     end.Y = positionAxisY;  
+     lastDisplacementAxisY = choosedDisplacement;  
+  }
+
+  if(turn.cutAxis == "y"){
     var {startPoint,usedDisplacement} = turn;
     var positionAxisX = startPoint.X + usedDisplacement + choosedDisplacement; 
      
@@ -67,19 +79,6 @@ function handleSubmit(params: React.FormEvent<Element>)
      end.X = positionAxisX;
      end.Y = startPoint.Y + turn.height;
      lastDisplacementAxisX = choosedDisplacement;
-    }
-
-   if(turn.axis == "x")
-  {
-    var {startPoint,usedDisplacement} = turn;
-    var positionAxisY = startPoint.Y + usedDisplacement + choosedDisplacement; 
-
-    start.X = startPoint.X;
-    start.Y = positionAxisY;
-
-    end.X = startPoint.X + turn.width;
-    end.Y = positionAxisY;  
-    lastDisplacementAxisY = choosedDisplacement;  
   }
 
    turn.updateUsedDisplacement(choosedDisplacement);
@@ -145,22 +144,7 @@ function drawLine(context: CanvasRenderingContext2D, start: IPosition,end: IPosi
       var startPoint = null;
       var maxAcceptableDisplacement = 0,width,height;
 
-      if(previousPhase.axis == "y"){
-
-        var positionX = previousPhase.usedDisplacement - lastDisplacementAxisX;
-
-        positionX = positionX >= 0 ? positionX : 0; 
-
-        startPoint ={
-          X: positionX,
-          Y: previousPhase.startPoint.Y
-        };
-
-        maxAcceptableDisplacement = lastDisplacementAxisY;
-        width = lastDisplacementAxisX;
-        height = lastDisplacementAxisY;
-      }else{
-
+      if(previousPhase.cutAxis == "x"){
         var positionY = previousPhase.usedDisplacement - lastDisplacementAxisY;
 
        positionY =  positionY >= 0 ? positionY : 0;
@@ -173,9 +157,23 @@ function drawLine(context: CanvasRenderingContext2D, start: IPosition,end: IPosi
         maxAcceptableDisplacement = lastDisplacementAxisX;
         width = lastDisplacementAxisX;
         height = lastDisplacementAxisY;
+      }else{
+        
+        var positionX = previousPhase.usedDisplacement - lastDisplacementAxisX;
+
+        positionX = positionX >= 0 ? positionX : 0; 
+
+        startPoint ={
+          X: positionX,
+          Y: previousPhase.startPoint.Y
+        };
+
+        maxAcceptableDisplacement = lastDisplacementAxisY;
+        width = lastDisplacementAxisX;
+        height = lastDisplacementAxisY;
       }
 
-      currentPhase = new Turn(phaseNumber,lastDisplacementAxisY,startPoint,oppositeAxis(previousPhase.axis),width,height);
+      currentPhase = new Turn(phaseNumber,lastDisplacementAxisY,startPoint,oppositeAxis(previousPhase.cutAxis),width,height);
 
       var currentTurns = turns;
       currentTurns.push(currentPhase);

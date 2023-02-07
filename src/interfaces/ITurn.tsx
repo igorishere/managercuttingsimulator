@@ -4,7 +4,7 @@ export default interface ITurn{
     maxAcceptableDisplacement: number;
     usedDisplacement: number;
     startPoint: IPosition;
-    axis: string;
+    cutAxis: string;
 
     width: number;
     height:number;
