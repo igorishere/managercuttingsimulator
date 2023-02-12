@@ -84,7 +84,6 @@ function handleSubmit(params: React.FormEvent<Element>)
   }
 
   if(turn.cutAxis == "y"){
-    // var {startPoint,usedDisplacement,maxAcceptableDisplacement} = turn;
     var positionAxisX = startPoint.X + usedDisplacement + choosedDisplacement; 
      
      start.X = positionAxisX;
@@ -149,15 +148,23 @@ function drawLine(context: CanvasRenderingContext2D, start: IPosition,end: IPosi
   }
   function managePhases(phaseNumber: number): Turn {
   
-    var currentPhase = getCurrentPhaseWithIndex(phaseNumber);
-    var previousPhase = getCurrentPhaseWithIndex(phaseNumber-1);
+    var previousPhase = getOpenedTurnByIndex(phaseNumber-1);
+    var currentPhase = getOpenedTurnByIndex(phaseNumber);
+    var nextPhase = getOpenedTurnByIndex(phaseNumber+1);
 
-    if(currentPhase) return currentPhase;
+    if(currentPhase)
+    {
+
+      if(nextPhase)
+        nextPhase.closeTurn(); 
+      
+      return currentPhase;
+    }
 
     if(previousPhase){
       
       var startPoint = null;
-      var maxAcceptableDisplacement = 0,width,height;
+      var maxAcceptableDisplacement,width,height;
 
       if(previousPhase.cutAxis == "x"){
         var positionY = previousPhase.usedDisplacement - lastDisplacementAxisY;
@@ -169,8 +176,8 @@ function drawLine(context: CanvasRenderingContext2D, start: IPosition,end: IPosi
           Y: positionY
         };
 
-        maxAcceptableDisplacement = lastDisplacementAxisX;
-        width = lastDisplacementAxisX;
+        maxAcceptableDisplacement = previousPhase.width;
+        width = previousPhase.width;
         height = lastDisplacementAxisY;
       }else{
         
@@ -183,13 +190,13 @@ function drawLine(context: CanvasRenderingContext2D, start: IPosition,end: IPosi
           Y: previousPhase.startPoint.Y
         };
 
-        maxAcceptableDisplacement = lastDisplacementAxisY;
+        maxAcceptableDisplacement = previousPhase.height;
         width = lastDisplacementAxisX;
-        height = lastDisplacementAxisY;
+        height = previousPhase.height;
       }
 
       currentPhase = new Turn(phaseNumber,maxAcceptableDisplacement,startPoint,oppositeAxis(previousPhase.cutAxis),width,height);
-
+      
       var currentTurns = turns;
       currentTurns.push(currentPhase);
       setTurns(currentTurns); 
@@ -197,7 +204,7 @@ function drawLine(context: CanvasRenderingContext2D, start: IPosition,end: IPosi
 
     return currentPhase;
   }
-  const getCurrentPhaseWithIndex = (choosedPhase: number): Turn => turns.filter( x => x.index == choosedPhase )[0];
+  const getOpenedTurnByIndex = (choosedPhase: number): Turn => turns.filter( x => x.index == choosedPhase && x.closed === false)[0];
 
   const oppositeAxis = (axis:string ): string => axis === "x" ? "y" : "x";
 
