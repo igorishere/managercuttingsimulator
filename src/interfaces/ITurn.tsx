@@ -5,7 +5,7 @@ export default interface ITurn{
     usedDisplacement: number;
     startPoint: IPosition;
     cutAxis: string;
-
+    closed: boolean;
     width: number;
     height:number;
 };
