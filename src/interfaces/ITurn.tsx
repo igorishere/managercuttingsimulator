@@ -7,5 +7,5 @@ export default interface ITurn{
     cutAxis: string;
     closed: boolean;
     width: number;
-    height:number;
+    height:number; 
 };

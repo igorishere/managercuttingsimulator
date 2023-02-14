@@ -1,5 +1,5 @@
-import IPosition from "./interfaces/IPosition";
-import ITurn from "./interfaces/ITurn";
+import IPosition from "../interfaces/IPosition";
+import ITurn from "../interfaces/ITurn";
 
 export default class Turn implements ITurn{
 
@@ -33,7 +33,7 @@ export default class Turn implements ITurn{
         this._maxAcceptableDisplacement = this._maxAcceptableDisplacement - displacement;
     }
 
-    public closeTurn(){
+    public closeTurn(): void{
         this._closed = true;
     }
 }
