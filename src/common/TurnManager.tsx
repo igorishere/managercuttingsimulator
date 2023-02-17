@@ -31,14 +31,14 @@ export class TurnManager{
 
     public GetTurnByIndex(phaseNumber: number,lastDisplacementAxisY: number,lastDisplacementAxisX: number ): Turn {
   
-        var previousPhase = this.getOpenedTurnByIndex(phaseNumber-1);
-        var currentPhase = this.getOpenedTurnByIndex(phaseNumber);
-        var nextPhase = this.getOpenedTurnByIndex(phaseNumber+1);
+        var previousPhase = this.GetOpenedTurnByIndex(phaseNumber-1);
+        var currentPhase = this.GetOpenedTurnByIndex(phaseNumber);
+        var nextPhase = this.GetOpenedTurnByIndex(phaseNumber+1);
     
         if(currentPhase)
         {
-          if(nextPhase)
-            nextPhase.closeTurn(); 
+          if(nextPhase)  
+            this.CloseAllNextTurns(nextPhase);
           
           return currentPhase;
         }
@@ -77,7 +77,7 @@ export class TurnManager{
             height = previousPhase.height;
           }
     
-          currentPhase = new Turn(phaseNumber,maxAcceptableDisplacement,startPoint,this.oppositeAxis(previousPhase.cutAxis),width,height);
+          currentPhase = new Turn(phaseNumber,maxAcceptableDisplacement,startPoint,this.OppositeAxis(previousPhase.cutAxis),width,height);
           
           this._turns.push(currentPhase);
         }
@@ -85,7 +85,16 @@ export class TurnManager{
         return currentPhase;
       }
 
-      private getOpenedTurnByIndex = (choosedPhase: number): Turn => this._turns.filter( x => x.index == choosedPhase && x.closed === false)[0];
+      private GetOpenedTurnByIndex = (choosedPhase: number): Turn => this._turns.filter( x => x.index == choosedPhase && x.closed === false)[0];
 
-      private oppositeAxis = (axis: string) => axis === "x" ? "y" : "x";
+      private OppositeAxis = (axis: string) => axis === "x" ? "y" : "x";
+
+      private CloseAllNextTurns(turn: Turn): void{
+        turn.closeTurn();
+
+        var nextPhase = this.GetOpenedTurnByIndex(turn.index+1);
+
+        if(nextPhase)
+          this.CloseAllNextTurns(nextPhase);
+      }
 }

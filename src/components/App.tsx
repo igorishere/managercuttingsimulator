@@ -50,7 +50,7 @@ function handleSubmit(params: React.FormEvent<Element>)
 
   var {maxAcceptableDisplacement} = turn;
 
-  if(choosedDisplacement > maxAcceptableDisplacement){
+  if(choosedDisplacement >= maxAcceptableDisplacement){
 
      var feedbackMessage = maxAcceptableDisplacement <= 0 
      ? "There´s no free space to execute a new command."
@@ -164,13 +164,6 @@ function drawLine( start: IPosition,end: IPosition): void{
     ) : (<></>)
 
     }
-    <p>Displacement:</p>
-    <input type="number" name='displacement' value={displacement} onChange={(e) => setDisplacement(e.target.value)}></input>
-
-    <p>Phase:</p>
-    <input type="text" name='phase' value={phaseNumber} onChange={(e) => setPhaseNumber(e.target.value)}></input>
-
-    <button type='submit'>Send</button>
 
     {
     axisFirstCut === "" || axisFirstCut === undefined ? 
@@ -179,7 +172,16 @@ function drawLine( start: IPosition,end: IPosition): void{
     </>
     ) : 
     (
-    <button onClick={e => clearCanvas(e)}>Clear board</button>
+      <>
+    <p>Displacement:</p>
+    <input type="number" name='displacement' value={displacement} onChange={(e) => setDisplacement(e.target.value)}></input>
+
+      <p>Phase:</p>
+      <input type="text" name='phase' value={phaseNumber} onChange={(e) => setPhaseNumber(e.target.value)}></input>
+  
+      <button type='submit'>Send</button>
+      <button onClick={e => clearCanvas(e)}>Clear board</button>
+      </>
     )
 
     } 
