@@ -22,8 +22,19 @@ useEffect(()=>{
   let canvas = canvasRef.current;
   var container = document.getElementById('container') as HTMLDivElement;
 
-  canvas.width = container.clientWidth;
-  canvas.height = container.clientHeight;
+
+  let {clientWidth, clientHeight} = container; 
+  
+  var widthInMilimeters = 300 * (96 / 25.4);
+  var heightInMilimeters =  900 * (96 / 25.4);
+
+  var ratioW: number =  widthInMilimeters /  (clientWidth - 50);
+  var ratioH: number = heightInMilimeters / (clientHeight - 50);
+
+  var aspectRatio = Math.max(ratioW,ratioH); 
+
+  canvas.width = widthInMilimeters / aspectRatio;
+  canvas.height = heightInMilimeters / aspectRatio;
 
   var context = canvas.getContext("2d");
   context.lineCap = 'round';
@@ -147,7 +158,9 @@ function drawLine( start: IPosition,end: IPosition): void{
 
   return (
     <div id='container' className='container'>
-    <canvas id='canvas' ref={canvasRef}></canvas>
+    <div id='canvasWrapper'>
+      <canvas id='canvas' ref={canvasRef}></canvas>
+    </div>
     <div className='boardFooter'>
     <form onSubmit={(e) => handleSubmit(e)} id="form">
     {
