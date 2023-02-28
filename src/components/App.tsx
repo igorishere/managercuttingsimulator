@@ -3,9 +3,15 @@ import './App.css';
 import IPosition from '../interfaces/IPosition'; 
 import { TurnManager } from '../common/TurnManager';
 import Turn from '../common/Turn';
+import { Utils } from '../common/Utils';
  
 let lastDisplacementAxisX: number = 0;
 let lastDisplacementAxisY: number = 0;
+
+const DEFAULT_BOARD_WIDTH_IN_MILIMETERS = 2750;
+const DEFAULT_BOARD_HEIGHT_IN_MILIMETERS = 1850;
+
+let aspectRatio = 0;
 
 let turnManager = new TurnManager();
 
@@ -15,26 +21,34 @@ const [phaseNumber,setPhaseNumber] = useState("");
 const [displacement,setDisplacement] = useState("");  
 const [axisFirstCut,setAxisFirstCut] = useState("");
 const [feedbackMessage,setFeedbackMessage] = useState("");
+const [boardWidth,setBoardWidth] = useState(DEFAULT_BOARD_WIDTH_IN_MILIMETERS);
+const [boardHeight,setBoardHeight] = useState(DEFAULT_BOARD_HEIGHT_IN_MILIMETERS);
 
 const canvasRef = useRef<HTMLCanvasElement>(null);
+ 
+useEffect(()=> DefineBoardSize(),[boardWidth,boardHeight]);
+useEffect(()=> StartCanvas(),[]);
 
-useEffect(()=>{
+function DefineBoardSize(): void{
   let canvas = canvasRef.current;
   var container = document.getElementById('container') as HTMLDivElement;
 
-
   let {clientWidth, clientHeight} = container; 
   
-  var widthInMilimeters = 300 * (96 / 25.4);
-  var heightInMilimeters =  900 * (96 / 25.4);
+  var boardWithInPixels =  Utils.ConvertMilimetersToPixels(boardWidth);
+  var boardHeightInPixels =  Utils.ConvertMilimetersToPixels(boardHeight);
 
-  var ratioW: number =  widthInMilimeters /  (clientWidth - 50);
-  var ratioH: number = heightInMilimeters / (clientHeight - 50);
+  var ratioW: number =  boardWithInPixels / (clientWidth - 50);
+  var ratioH: number = boardHeightInPixels / (clientHeight - 50);
 
-  var aspectRatio = Math.max(ratioW,ratioH); 
+  aspectRatio = Math.max(ratioW,ratioH); 
 
-  canvas.width = widthInMilimeters / aspectRatio;
-  canvas.height = heightInMilimeters / aspectRatio;
+  canvas.width = boardWithInPixels / aspectRatio;
+  canvas.height = boardHeightInPixels / aspectRatio;
+}
+
+function StartCanvas(){
+  let canvas = canvasRef.current; 
 
   var context = canvas.getContext("2d");
   context.lineCap = 'round';
@@ -42,12 +56,12 @@ useEffect(()=>{
    
   setAxisFirstCut("");
   
-  lastDisplacementAxisX = canvas.width;
-  lastDisplacementAxisY = canvas.height;
-  turnManager = new TurnManager();
-},[]);
+  lastDisplacementAxisX = Utils.ConvertPixelsToMilimeters(canvas.width * aspectRatio);
+  lastDisplacementAxisY = Utils.ConvertPixelsToMilimeters(canvas.height * aspectRatio);
+  turnManager = new TurnManager(); 
+}
 
-function handleSubmit(params: React.FormEvent<Element>)
+function HandleSubmit(params: React.FormEvent<Element>)
 { 
    params.preventDefault();
 
@@ -76,10 +90,10 @@ function handleSubmit(params: React.FormEvent<Element>)
    var end = result[1];
  
    turn.updateUsedDisplacement(choosedDisplacement);
-   drawLine(start,end);
+   DrawLine(start,end);
    } 
    
-function drawLine( start: IPosition,end: IPosition): void{
+function DrawLine( start: IPosition,end: IPosition): void{
   let canvas = canvasRef.current;
   let context = canvas.getContext("2d");
   
@@ -88,7 +102,7 @@ function drawLine( start: IPosition,end: IPosition): void{
   context.stroke(); 
 }
 
-  function clearCanvas(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+  function ClearCanvas(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
     event.preventDefault();
 
     var canvas = canvasRef.current;
@@ -101,7 +115,8 @@ function drawLine( start: IPosition,end: IPosition): void{
     lastDisplacementAxisY = canvas.height;
 
     turnManager = new TurnManager();
-
+    setBoardHeight(DEFAULT_BOARD_HEIGHT_IN_MILIMETERS);
+    setBoardWidth(DEFAULT_BOARD_WIDTH_IN_MILIMETERS);
     setPhaseNumber("");
     setDisplacement("");  
     setAxisFirstCut(""); 
@@ -109,10 +124,14 @@ function drawLine( start: IPosition,end: IPosition): void{
   }
 
   function GetInitalAndFinalCoordinates(turn: Turn, displacement: number): [start: IPosition,end: IPosition]{
+    var {startPoint,usedDisplacement,cutAxis} = turn;
 
-    var {startPoint,usedDisplacement} = turn;
+    let usedDisplacementInPixels = Utils.ConvertMilimetersToPixels(usedDisplacement) / aspectRatio;
+    let displacementInPixels = Utils.ConvertMilimetersToPixels(displacement) / aspectRatio;
+    var startPointYInPixels = Utils.ConvertMilimetersToPixels(startPoint.Y) / aspectRatio;
+    var startPointXInPixels = Utils.ConvertMilimetersToPixels(startPoint.X) / aspectRatio;
 
-    var start = {
+    let start = {
       X: 0,
       Y: 0
     }
@@ -122,26 +141,27 @@ function drawLine( start: IPosition,end: IPosition): void{
       Y: 0
     }
 
-    if(turn.cutAxis == "x"){
-      var positionAxisY = startPoint.Y + usedDisplacement + displacement; 
+    if(cutAxis == "x"){
+      startPointYInPixels = startPointYInPixels + usedDisplacementInPixels + displacementInPixels; 
     
-      start.X = startPoint.X;
-      start.Y = positionAxisY;
+      start.X = startPointXInPixels;
+      start.Y = startPointYInPixels;
     
-      end.X = startPoint.X + turn.width;
-      end.Y = positionAxisY;  
-      lastDisplacementAxisY = displacement;  
+      end.X = startPointXInPixels + (Utils.ConvertMilimetersToPixels(turn.width) / aspectRatio);
+      end.Y = startPointYInPixels;  
+
+      lastDisplacementAxisY = Utils.ConvertPixelsToMilimeters(displacementInPixels) * aspectRatio;  
    }
  
-   if(turn.cutAxis == "y"){
-     var positionAxisX = startPoint.X + usedDisplacement + displacement; 
+   if(cutAxis == "y"){
+     startPointXInPixels = startPointXInPixels + usedDisplacementInPixels + displacementInPixels; 
       
-      start.X = positionAxisX;
-      start.Y = startPoint.Y;
+      start.X = startPointXInPixels;
+      start.Y = startPointYInPixels;
       
-      end.X = positionAxisX;
-      end.Y = startPoint.Y + turn.height;
-      lastDisplacementAxisX = displacement;
+      end.X = startPointXInPixels;
+      end.Y = startPointYInPixels + (Utils.ConvertMilimetersToPixels(turn.height) / aspectRatio);
+      lastDisplacementAxisX = Utils.ConvertPixelsToMilimeters(displacementInPixels) * aspectRatio;
    }
 
     return [start,end];
@@ -152,7 +172,7 @@ function drawLine( start: IPosition,end: IPosition): void{
       setAxisFirstCut(value);
       setPhaseNumber("1");
 
-      turnManager.Start(canvasRef.current.width,canvasRef.current.height,value);
+      turnManager.Start(boardWidth,boardHeight,value);
     }
   }
 
@@ -162,7 +182,7 @@ function drawLine( start: IPosition,end: IPosition): void{
       <canvas id='canvas' ref={canvasRef}></canvas>
     </div>
     <div className='boardFooter'>
-    <form onSubmit={(e) => handleSubmit(e)} id="form">
+    <form onSubmit={(e) => HandleSubmit(e)} id="form">
     {
     axisFirstCut === "" || axisFirstCut === undefined ? 
     (
@@ -173,6 +193,11 @@ function drawLine( start: IPosition,end: IPosition): void{
         <option value="x">Horizontal</option>
         <option value="y">Vertical</option>
       </select>
+
+      <p>Board witdth:</p>
+      <input type='number' value={boardWidth}  onChange={(e) => setBoardWidth(parseInt(e.target.value))}/>
+      <p>Board height:</p>
+      <input type='number' value={boardHeight} onChange={(e) => setBoardHeight(parseInt(e.target.value))}/>
     </>
     ) : (<></>)
 
@@ -193,7 +218,7 @@ function drawLine( start: IPosition,end: IPosition): void{
       <input type="text" name='phase' value={phaseNumber} onChange={(e) => setPhaseNumber(e.target.value)}></input>
   
       <button type='submit'>Send</button>
-      <button onClick={e => clearCanvas(e)}>Clear board</button>
+      <button onClick={e => ClearCanvas(e)}>Clear board</button>
       </>
     )
 
