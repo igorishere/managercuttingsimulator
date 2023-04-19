@@ -1,11 +1,12 @@
 import IPosition from "../interfaces/IPosition";
-import ITurn from "../interfaces/ITurn";
+import ITurn from "../interfaces/ITurn";  
+import { eAxis } from "./eAxis";
 
 export default class Turn implements ITurn{
 
     readonly index: number;
     readonly startPoint: IPosition;
-    readonly cutAxis: string;
+    readonly cutAxis: eAxis;
     readonly width: number;
     readonly height: number;
     public get closed(): boolean {return this._closed};
@@ -15,7 +16,7 @@ export default class Turn implements ITurn{
     public get usedDisplacement(): number { return this._usedDisplacement };
     private _usedDisplacement: number;
     
-    constructor(index: number, maxAcceptableDisplacement: number, startPoint: IPosition, axis: string,width: number,height:number){
+    constructor(index: number, maxAcceptableDisplacement: number, startPoint: IPosition, axis: eAxis,width: number,height:number){
         this.index = index !== null ? index : null;
         this.startPoint = startPoint !== null ? startPoint : null;
         this.cutAxis = axis;

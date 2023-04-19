@@ -4,7 +4,8 @@ import IPosition from '../interfaces/IPosition';
 import { TurnManager } from '../common/TurnManager';
 import Turn from '../common/Turn';
 import { Utils } from '../common/Utils';
- 
+import { eAxis } from '../common/eAxis';
+
 let lastDisplacementAxisX: number = 0;
 let lastDisplacementAxisY: number = 0;
 
@@ -141,7 +142,7 @@ function DrawLine( start: IPosition,end: IPosition): void{
       Y: 0
     }
 
-    if(cutAxis == "x"){
+    if(cutAxis == eAxis.Horizontal){
       startPointYInPixels = startPointYInPixels + usedDisplacementInPixels + displacementInPixels; 
     
       start.X = startPointXInPixels;
@@ -153,7 +154,7 @@ function DrawLine( start: IPosition,end: IPosition): void{
       lastDisplacementAxisY = Utils.ConvertPixelsToMilimeters(displacementInPixels) * aspectRatio;  
    }
  
-   if(cutAxis == "y"){
+   if(cutAxis == eAxis.Vertical){
      startPointXInPixels = startPointXInPixels + usedDisplacementInPixels + displacementInPixels; 
       
       start.X = startPointXInPixels;
@@ -167,9 +168,9 @@ function DrawLine( start: IPosition,end: IPosition): void{
     return [start,end];
   }
 
-  function handleAxisFirstCutChange(value: string): void {
-    if(value === "x" || value === "y"){
-      setAxisFirstCut(value);
+  function handleAxisFirstCutChange(value: eAxis): void {
+    if(value !== null || value !== undefined){
+      // setAxisFirstCut(value);
       setPhaseNumber("1");
 
       turnManager.Start(boardWidth,boardHeight,value);
@@ -188,7 +189,7 @@ function DrawLine( start: IPosition,end: IPosition): void{
     (
     <>
       <p>Axis first cut:</p>
-      <select onChange={(e) => handleAxisFirstCutChange(e.target.value)}>
+      <select>
         <option value="none">none</option>
         <option value="x">Horizontal</option>
         <option value="y">Vertical</option>

@@ -1,21 +1,22 @@
 import Turn from "./Turn";
+import { eAxis } from "./eAxis";
 export class TurnManager{
     
-    public get turn(): Array<Turn> { return this._turns };
+    public get turns(): Array<Turn> { return this._turns };
     private _turns: Array<Turn>;
 
     constructor(){
       this._turns = new Array<Turn>();
     }
 
-    public Start(firstTurnWidth: number, firstTurnHeight: number, firstCutAxis: string): void{
+    public Start(firstTurnWidth: number, firstTurnHeight: number, firstCutAxis: eAxis): void{
         var maxAcceptableDisplacement, width,height = null;  
         var startPosition = {
             X: 0,
             Y: 0
         }
 
-        if(firstCutAxis === "y"){
+        if(firstCutAxis === eAxis.Vertical){
           maxAcceptableDisplacement = firstTurnWidth;
           width = firstTurnWidth;
           height = firstTurnHeight;
@@ -48,7 +49,7 @@ export class TurnManager{
           var startPoint = null;
           var maxAcceptableDisplacement,width,height;
     
-          if(previousPhase.cutAxis == "x"){
+          if(previousPhase.cutAxis == eAxis.Horizontal){
             var positionY = previousPhase.usedDisplacement - lastDisplacementAxisY;
     
            positionY =  positionY >= 0 ? positionY : 0;
@@ -87,7 +88,7 @@ export class TurnManager{
 
       private GetOpenedTurnByIndex = (choosedPhase: number): Turn => this._turns.filter( x => x.index == choosedPhase && x.closed === false)[0];
 
-      private OppositeAxis = (axis: string) => axis === "x" ? "y" : "x";
+      private OppositeAxis = (axis: eAxis) => axis === eAxis.Horizontal ? eAxis.Vertical : eAxis.Horizontal;
 
       private CloseAllNextTurns(turn: Turn): void{
         turn.closeTurn();
