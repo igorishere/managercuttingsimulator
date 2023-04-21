@@ -6,7 +6,7 @@ interface CutterState{
     boardHeight: number,
     displacement: number,
     phaseNumber: number,
-    axisFirstCut: eAxis | null
+    axisFirstCut: eAxis
 }
 
 const DEFAULT_BOARD_WIDTH_IN_MILIMETERS = 2750;
@@ -17,7 +17,21 @@ const cutterState: CutterState = {
     boardHeight: DEFAULT_BOARD_HEIGHT_IN_MILIMETERS,
     displacement: 0,
     phaseNumber: 1,
-    axisFirstCut: null
+    axisFirstCut: eAxis.Horizontal
+}
+
+
+const ValidateParameters = (parameter: number): number =>{
+    
+    if (parameter === null ||
+        parameter === undefined ||
+        isNaN(parameter) ||
+        parameter < 0  ) 
+    {
+        return 0;
+    }
+
+    return parameter;
 }
 
 export const cutterSlice = createSlice({
@@ -25,16 +39,22 @@ export const cutterSlice = createSlice({
     initialState: cutterState,
     reducers:{
         setBoardWidth: (state, action: PayloadAction<number>) => {
-            state.boardWidth = action.payload;
+            const parameter = ValidateParameters(action.payload);
+            state.boardWidth = parameter;
         },
         setBoardHeight: (state, action: PayloadAction<number>) => {
-            state.boardHeight = action.payload;
+            const parameter = ValidateParameters(action.payload);
+            state.boardHeight = parameter;
         },
         setDisplacement: (state, action: PayloadAction<number>) => {
-            state.displacement = action.payload;
+
+            const parameter = ValidateParameters(action.payload);
+            state.displacement = parameter;
         },
         setPhaseNumber: (state, action: PayloadAction<number>) => {
-            state.phaseNumber = action.payload;
+
+            const parameter = ValidateParameters(action.payload);
+            state.phaseNumber = parameter;
         },
         setAxisFirstCut: (state, action: PayloadAction<eAxis>) => {
             state.axisFirstCut = action.payload;

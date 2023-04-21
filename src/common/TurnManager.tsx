@@ -23,7 +23,7 @@ export class TurnManager{
         }else{
           maxAcceptableDisplacement =firstTurnHeight;
           width = firstTurnWidth;
-          height = firstTurnWidth;
+          height = firstTurnHeight;
         }
   
         var turn = new Turn(1,maxAcceptableDisplacement,startPosition,firstCutAxis,width,height);

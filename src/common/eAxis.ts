@@ -1,4 +1,6 @@
 export enum eAxis{
-    Horizontal = "X",
-    Vertical = "y"
+    Horizontal = "Horizontal",
+    Vertical = "Vertical"
 }
+
+export type eAxisStrings = keyof typeof eAxis;

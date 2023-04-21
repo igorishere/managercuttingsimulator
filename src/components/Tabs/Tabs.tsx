@@ -27,7 +27,9 @@ export default function TabsControl()
         <Box width={'100%;'}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs 
-                    centered onChange={ (event,value) => {setIndexSelectedTab(value)} }>
+                    centered 
+                    onChange={ (event,value) => {setIndexSelectedTab(value)} }
+                >
                     <Tab sx={{textTransform: 'none'}} label="File reading" />
                     <Tab sx={{textTransform: 'none'}} label="Sandbox area" />
                 </Tabs>

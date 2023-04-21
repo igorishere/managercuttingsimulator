@@ -4,13 +4,14 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button'; 
 import { useAppSelector,useAppDispatch } from "../../redux/hooks";
 import {setBoardWidth,setBoardHeight,setDisplacement,setPhaseNumber,setAxisFirstCut} from '../../redux/slices/cutterslice';
-import { eAxis } from "../../common/eAxis";
+import { eAxis, eAxisStrings } from "../../common/eAxis";
 import { useMemo } from "react";
 
 const subheader = (<ListSubheader>Parameters</ListSubheader>);
  
 interface ParametersFormProps{
-    performNewCut: () => void | null
+    performNewCut: () => void | null,
+    clearCurrentBoard: () => void | null
 };
 
 export default function ParametersForm(props: ParametersFormProps){
@@ -33,9 +34,10 @@ export default function ParametersForm(props: ParametersFormProps){
                         variant="outlined"
                         select
                         size="small"
-                        value={axisFirstCut}
-                        onChange={(e) => {
-                            dispatcher(setAxisFirstCut( e.target.value as eAxis ))
+                        value={axisFirstCut} 
+                        onChange={(e) => { 
+                            const value = eAxis[e.target.value as eAxisStrings]; 
+                            dispatcher(setAxisFirstCut(value))
                         }}
                     >
                         {Object.keys(eAxis).map((option) => (
@@ -53,6 +55,7 @@ export default function ParametersForm(props: ParametersFormProps){
                         variant="outlined"
                         size="small"
                         defaultValue={boardWidth}
+                        value={boardWidth}
                         onChange={(e) => dispatcher(setBoardWidth(parseInt( e.target.value )))}
                      />
                 </ListItem>
@@ -63,6 +66,7 @@ export default function ParametersForm(props: ParametersFormProps){
                         variant="outlined"
                         size="small"
                         defaultValue={boardHeight}
+                        value={boardHeight}
                         onChange={(e) => dispatcher(setBoardHeight(parseInt( e.target.value )))}
                     />
                 </ListItem>
@@ -73,6 +77,7 @@ export default function ParametersForm(props: ParametersFormProps){
                         variant="outlined"
                         size="small"
                         defaultValue={displacement}
+                        value={displacement}
                         onChange={(e) => dispatcher(setDisplacement(parseInt( e.target.value )))}
                     />
                 </ListItem>
@@ -83,6 +88,7 @@ export default function ParametersForm(props: ParametersFormProps){
                         variant="outlined"
                         size="small"
                         defaultValue={phaseNumber}
+                        value={phaseNumber}
                         onChange={(e) => dispatcher(setPhaseNumber(parseInt( e.target.value )))}
                     />
                 </ListItem>
@@ -92,7 +98,10 @@ export default function ParametersForm(props: ParametersFormProps){
                         variant="contained" 
                         onClick={props.performNewCut}
                         disabled = { performNewCutAllowed}>Cut!</Button>
-                    <Button variant="contained">Clear board</Button>
+                    <Button 
+                        variant="contained"
+                        onClick={props.clearCurrentBoard}
+                        >Clear board</Button>
                     </Stack>
                 </ListItem>            
             </List> 
