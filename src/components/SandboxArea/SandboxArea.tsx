@@ -152,6 +152,9 @@ function GetInitalAndFinalCoordinates(turn: Turn, displacement: number): [start:
     return [start,end];
   }
 
+function CloseSnackBar(): void{
+    setOpenSnackbar(false); 
+}
     return(
     <>    
        <Box sx={{flexGrow: 1, bgcolor:'#e2e2e2', padding:'20px 10px'}}>
@@ -169,7 +172,23 @@ function GetInitalAndFinalCoordinates(turn: Turn, displacement: number): [start:
                         }}
                         >
                         </canvas>
-                    </Paper> 
+                    </Paper>
+                    <Snackbar 
+                        open={openSnackBar}
+                        autoHideDuration={5000}
+                        onClose={ (event: React.SyntheticEvent | Event, reason?: string) => {
+                            if (reason === 'clickaway') {
+                                return;
+                              }
+                            
+                            CloseSnackBar();
+                        } }>
+                       <Alert
+                       onClose={CloseSnackBar} 
+                        severity="warning">
+                       {feedbackMessage}
+                       </Alert>
+                    </Snackbar>
                 </Grid>
                 <Grid item xs={4}>
                    <Grid spacing={2} container  direction={'column'}>
