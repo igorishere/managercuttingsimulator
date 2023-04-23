@@ -8,12 +8,12 @@ import ParametersForm from "../ParametersForm/ParametersForm";
 import { useEffect, useRef, useState } from "react";
 import { TurnManager } from "../../common/TurnManager";
 import { useAppSelector,useAppDispatch } from "../../redux/hooks";
-import { eAxis,eAxisStrings } from "../../common/eAxis";
+import { eAxis } from "../../common/eAxis";
 import { Utils } from "../../common/Utils";
 import Turn from "../../common/Turn";
 import IPosition from "../../interfaces/IPosition";
 import { setAxisFirstCut, setBoardHeight, setBoardWidth, setDisplacement, setPhaseNumber } from "../../redux/slices/cutterslice";
-import Button from "@mui/material/Button";
+import './SandboxArea.css';
 
 let lastDisplacementAxisX: number = 0;
 let lastDisplacementAxisY: number = 0;
@@ -160,18 +160,8 @@ function CloseSnackBar(): void{
        <Box sx={{flexGrow: 1, bgcolor:'#e2e2e2', padding:'20px 10px'}}>
             <Grid container spacing={2}>
                 <Grid item xs={8}>
-                    <Paper id='canvasWrapper' sx={{height:'550px', padding:'10px 10px'}}> 
-                        <canvas
-                        id='canvas'
-                        ref={canvasRef}
-                        style={{
-                            width:'100%',
-                            height:'100%', 
-                            border: "1px solid #929292",
-                            borderRadius: '5px'
-                        }}
-                        >
-                        </canvas>
+                    <Paper id='canvasWrapper'> 
+                        <canvas id='canvas'ref={canvasRef}></canvas>
                     </Paper>
                     <Snackbar 
                         open={openSnackBar}
