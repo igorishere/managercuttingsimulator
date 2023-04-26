@@ -1,5 +1,5 @@
-import IPosition from "../interfaces/IPosition";
-import ITurn from "../interfaces/ITurn";  
+import IPosition from "../IPosition";
+import ITurn from "./ITurn";  
 import { eAxis } from "./eAxis";
 
 export default class Turn implements ITurn{

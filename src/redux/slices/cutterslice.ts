@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit' 
-import { eAxis } from '../../common/eAxis';
+import { eAxis } from '../../common/cutter/eAxis';
+import { DefaultParameters } from '../../common/parameters/DefaultParameters';
 
 interface CutterState{
     boardWidth: number,
@@ -9,15 +10,13 @@ interface CutterState{
     axisFirstCut: eAxis
 }
 
-const DEFAULT_BOARD_WIDTH_IN_MILIMETERS = 2750;
-const DEFAULT_BOARD_HEIGHT_IN_MILIMETERS = 1850;
 
 const cutterState: CutterState = {
-    boardWidth: DEFAULT_BOARD_WIDTH_IN_MILIMETERS,
-    boardHeight: DEFAULT_BOARD_HEIGHT_IN_MILIMETERS,
-    displacement: 0,
-    phaseNumber: 1,
-    axisFirstCut: eAxis.Horizontal
+    boardWidth: DefaultParameters.DefaultBoardWidth,
+    boardHeight: DefaultParameters.DefaultBoardHeight,
+    displacement: DefaultParameters.DefaultDisplacement,
+    phaseNumber: DefaultParameters.DefaultPhaseNumber,
+    axisFirstCut: DefaultParameters.DefaultFirstCutAxis
 }
 
 

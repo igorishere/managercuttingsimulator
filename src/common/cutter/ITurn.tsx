@@ -1,5 +1,5 @@
-import { eAxis } from '../common/eAxis';
-import IPosition from './IPosition';
+import { eAxis } from './eAxis';
+import IPosition from '../IPosition';
 export default interface ITurn{
     index: number;
     maxAcceptableDisplacement: number;

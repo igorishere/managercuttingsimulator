@@ -1,23 +1,9 @@
 import Box from "@mui/material/Box";
-import Tabs from '@mui/material/Tabs';
+import Tabs, { TabsProps } from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useState } from "react";
-import SandboxArea from "../SandboxArea/SandboxArea"; 
-
-interface TabContentProps{
-    index: number,
-    currentIndex: number,
-    children?: React.ReactNode
-};
-function TabContent(props: TabContentProps){
-    return(
-        <>
-            <div hidden={ props.index !== props.currentIndex }>
-                {props.children}
-            </div>
-        </>
-    );
-}
+import SandboxArea from "../SandboxArea/SandboxArea";
+import TabContent from './TabContent'; 
 
 export default function TabsControl()
 { 

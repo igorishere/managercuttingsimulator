@@ -4,15 +4,11 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button'; 
 import { useAppSelector,useAppDispatch } from "../../redux/hooks";
 import {setBoardWidth,setBoardHeight,setDisplacement,setPhaseNumber,setAxisFirstCut} from '../../redux/slices/cutterslice';
-import { eAxis, eAxisStrings } from "../../common/eAxis";
+import { eAxis, eAxisStrings } from "../../common/cutter/eAxis";
 import { useMemo } from "react";
+import ParametersFormProps from "./ParametersFormProps";
 
 const subheader = (<ListSubheader>Parameters</ListSubheader>);
- 
-interface ParametersFormProps{
-    performNewCut: () => void | null,
-    clearCurrentBoard: () => void | null
-};
 
 export default function ParametersForm(props: ParametersFormProps){
 

@@ -6,14 +6,15 @@ import Paper from "@mui/material/Paper";
 import BoardsList from "../BoardsList/BoardsList";
 import ParametersForm from "../ParametersForm/ParametersForm";  
 import { useEffect, useRef, useState } from "react";
-import { TurnManager } from "../../common/TurnManager";
+import { TurnManager } from "../../common/cutter/TurnManager";
 import { useAppSelector,useAppDispatch } from "../../redux/hooks";
-import { eAxis } from "../../common/eAxis";
+import { eAxis } from "../../common/cutter/eAxis";
 import { Utils } from "../../common/Utils";
-import Turn from "../../common/Turn";
-import IPosition from "../../interfaces/IPosition";
+import Turn from "../../common/cutter/Turn";
+import IPosition from "../../common/IPosition";
 import { setAxisFirstCut, setBoardHeight, setBoardWidth, setDisplacement, setPhaseNumber } from "../../redux/slices/cutterslice";
 import './SandboxArea.css';
+import { DefaultParameters } from "../../common/parameters/DefaultParameters";
 
 let lastDisplacementAxisX: number = 0;
 let lastDisplacementAxisY: number = 0;
@@ -91,11 +92,21 @@ function ClearCanvas(): void {
     lastDisplacementAxisY = canvas.height;
 
     turnManager = new TurnManager();
-    dispatcher(setPhaseNumber(1));
-    dispatcher(setDisplacement(0));
-    dispatcher(setBoardWidth(2750)); //TODO: Move default sizes to a upper level
-    dispatcher(setBoardHeight(1850));
-    dispatcher(setAxisFirstCut());
+
+    const {
+        DefaultPhaseNumber, 
+        DefaultDisplacement,
+        DefaultBoardWidth,
+        DefaultBoardHeight,
+        DefaultFirstCutAxis
+    } = DefaultParameters;
+
+
+    dispatcher(setPhaseNumber(DefaultPhaseNumber));
+    dispatcher(setDisplacement(DefaultDisplacement));
+    dispatcher(setBoardWidth(DefaultBoardWidth));
+    dispatcher(setBoardHeight(DefaultBoardHeight));
+    dispatcher(setAxisFirstCut(DefaultFirstCutAxis));
   }
 
 function DrawLine( start: IPosition,end: IPosition): void{
