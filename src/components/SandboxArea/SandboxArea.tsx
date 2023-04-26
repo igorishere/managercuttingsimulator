@@ -2,8 +2,7 @@ import Box from "@mui/material/Box";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import BoardsList from "../BoardsList/BoardsList";
+import Paper from "@mui/material/Paper"; 
 import ParametersForm from "../ParametersForm/ParametersForm";  
 import { useEffect, useRef, useState } from "react";
 import { TurnManager } from "../../common/cutter/TurnManager";
@@ -192,24 +191,12 @@ function CloseSnackBar(): void{
                     </Snackbar>
                 </Grid>
                 <Grid item xs={4}>
-                   <Grid spacing={2} container  direction={'column'}>
-                        <Grid item flexGrow={1}>
-                            <Paper> 
-                                <ParametersForm 
-                                    performNewCut={PerformNewCut}
-                                    clearCurrentBoard={ClearCanvas}/>
-                            </Paper>
-                        </Grid>
-                        <Grid item flexGrow={1}>
-                            <Paper
-                                sx={{
-                                    height: '340px'
-                                }}
-                            >
-                                <BoardsList />
-                            </Paper>
-                        </Grid>
-                   </Grid>
+                    <Paper> 
+                        <ParametersForm 
+                            performNewCut={PerformNewCut}
+                            clearCurrentBoard={ClearCanvas}
+                        />
+                    </Paper> 
                 </Grid>
             </Grid>
         </Box>  
