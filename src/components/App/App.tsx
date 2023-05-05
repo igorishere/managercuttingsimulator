@@ -1,36 +1,21 @@
-import { Container } from '@mui/material';
+import { AppBar, Typography } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Box } from "@mui/material";
 import { DefaultTheme } from "../../theme/DefaultTheme";
 import TabsControl from '../Tabs/Tabs';
 
 const theme = createTheme(DefaultTheme);
 
-export default function App()
-{
-    return(
-    <>
-        <ThemeProvider theme={theme}>
-            <Box 
-                bgcolor={theme.palette.background.default} 
-                width={'100%'} 
-                height={'100vh'}
-                position='absolute'
-            >
-                <Container maxWidth={'xl'}>
-                    <Box 
-                        width={'100%'}  
-                        height={'100vh'}
-                        position={'relative'}
-                        display={'flex'}
-                        alignSelf={'center'} 
-                        bgcolor={theme.palette.primary.main} 
-                    >
-                        <TabsControl/>
-                    </Box> 
-                </Container>
-            </Box>
-        </ThemeProvider>
-    </>
+export default function App() {
+    return (
+        <>
+            <ThemeProvider theme={theme}>
+                <AppBar position='relative'>
+                    <Typography
+                        variant='h5'
+                        sx={{ padding: '5px', marginLeft: '10px' }}>Manager cutting simulator</Typography>
+                </AppBar>
+                <TabsControl />
+            </ThemeProvider>
+        </>
     );
 };

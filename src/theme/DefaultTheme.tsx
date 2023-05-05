@@ -12,4 +12,5 @@ export const DefaultTheme: ThemeOptions = {
       default: '#2C3333'
     }
   },
+  spacing: 5
 }; 
