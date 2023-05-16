@@ -1,5 +1,5 @@
 #canvasWrapper{
-    height: 550px;
+    height: 100%;
     padding: 8px;  
     display: flex;
     align-items: center;
@@ -12,9 +12,4 @@
     max-height: 100%;
     border: 1px solid #929292;
     border-radius: 5px; 
-}
-
-.componentWrapper{
-    display: flex;
-    flex-direction: column;
-}
+} 

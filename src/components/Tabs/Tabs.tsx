@@ -11,7 +11,7 @@ export default function TabsControl() {
     var [indexSelectedTab, setIndexSelectedTab] = useState(1);
 
     return (
-        <Box width={'100%;'}>
+        <>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs
                     centered
@@ -25,18 +25,19 @@ export default function TabsControl() {
             <TabContent index={0} currentIndex={indexSelectedTab}>
                 <Box sx={{
                     display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center'
+                    flexDirection:'row',
+                    justifyContent:'center',
+                    marginTop: '150px'
                 }}>
                     <Typography variant={"h5"}>
                         Comming soon!
                     </Typography>
                     <ImagesearchRollerIcon fontSize="large" />
                 </Box>
-            </TabContent>
+            </TabContent>  
             <TabContent index={1} currentIndex={indexSelectedTab}>
                 <SandboxArea />
             </TabContent>
-        </Box>
+        </>
     );
 };

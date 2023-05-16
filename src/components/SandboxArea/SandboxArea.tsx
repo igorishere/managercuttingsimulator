@@ -168,43 +168,45 @@ export default function SandboxArea() {
         setOpenSnackbar(false);
     }
     return (
-        <>
-            <div className="componentWrapper">
-                <Box
-                    sx={{ bgcolor: '#E7E7E7', padding: '10px' }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={8}>
-                            <Paper id='canvasWrapper'>
-                                <canvas id='canvas' ref={canvasRef}></canvas>
-                            </Paper>
-                            <Snackbar
-                                open={openSnackBar}
-                                autoHideDuration={5000}
-                                onClose={(event: React.SyntheticEvent | Event, reason?: string) => {
-                                    if (reason === 'clickaway') {
-                                        return;
-                                    }
+        <Box
+            sx={{
+                bgcolor: '#E7E7E7',
+                height: '100%'
+            }}>
+            <Grid
+                container spacing={2}
+                sx={{ padding: '10px' }}>
+                <Grid item xs={8}>
+                    <Paper id='canvasWrapper'>
+                        <canvas id='canvas' ref={canvasRef}></canvas>
+                    </Paper>
+                    <Snackbar
+                        open={openSnackBar}
+                        autoHideDuration={5000}
+                        onClose={(event: React.SyntheticEvent | Event, reason?: string) => {
+                            if (reason === 'clickaway') {
+                                return;
+                            }
 
-                                    CloseSnackBar();
-                                }}>
-                                <Alert
-                                    onClose={CloseSnackBar}
-                                    severity="warning">
-                                    {feedbackMessage}
-                                </Alert>
-                            </Snackbar>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <Paper>
-                                <ParametersForm
-                                    performNewCut={PerformNewCut}
-                                    clearCurrentBoard={ClearCanvas}
-                                />
-                            </Paper>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </div>
-        </>
+                            CloseSnackBar();
+                        }}>
+                        <Alert
+                            onClose={CloseSnackBar}
+                            severity="warning">
+                            {feedbackMessage}
+                        </Alert>
+                    </Snackbar>
+                </Grid>
+                <Grid item xs={4}>
+                    <Paper>
+                        <ParametersForm
+                            performNewCut={PerformNewCut}
+                            clearCurrentBoard={ClearCanvas}
+                        />
+                    </Paper>
+                </Grid>
+            </Grid>
+        </Box>
+
     );
 } 
