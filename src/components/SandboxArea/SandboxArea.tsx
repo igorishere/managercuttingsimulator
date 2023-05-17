@@ -171,11 +171,13 @@ export default function SandboxArea() {
         <Box
             sx={{
                 bgcolor: '#E7E7E7',
-                height: '100%'
+                height: '92%',
+                padding:'20px', 
             }}>
             <Grid
-                container spacing={2}
-                sx={{ padding: '10px' }}>
+                container 
+                spacing={4}
+                height={'100%'}>
                 <Grid item xs={8}>
                     <Paper id='canvasWrapper'>
                         <canvas id='canvas' ref={canvasRef}></canvas>
