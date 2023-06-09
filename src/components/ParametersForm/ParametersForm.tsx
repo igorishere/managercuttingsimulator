@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { setBoardWidth, setBoardHeight, setDisplacement, setPhaseNumber, setAxisFirstCut } from '../../redux/slices/cutterslice';
 import { eAxis, eAxisStrings } from "../../common/cutter/eAxis";
-import { useEffect, useMemo, useState } from "react";
+import { SetStateAction, useEffect, useMemo, useState } from "react";
 import ParametersFormProps from "./ParametersFormProps";
 import { useDispatch } from "react-redux";
 
@@ -21,55 +21,61 @@ export default function ParametersForm(props: ParametersFormProps) {
             displacement === undefined ||
             isNaN(displacement)
     }, [displacement]);
- 
-   
-    const [boardWidthState,setBoardWidthState] = useState(boardWidth.toString());
-    const [boardHeightState,setBoardHeightState] = useState(boardHeight.toString());
-    const [displacementState,setDisplacementState] = useState(displacement.toString());
+
+
+    const [boardWidthState, setBoardWidthState] = useState(boardWidth.toString());
+    const [boardHeightState, setBoardHeightState] = useState(boardHeight.toString());
+    const [displacementState, setDisplacementState] = useState(displacement.toString());
     useEffect(() => {
         var valueAsNumber = parseFloat(boardWidthState);
 
-        if(valueAsNumber && (valueAsNumber !== boardWidth)){
+        if (valueAsNumber && (valueAsNumber !== boardWidth)) {
             dispatcher(setBoardWidth(valueAsNumber));
         }
-    },[boardWidthState]); 
-    useEffect(()=>{
+    }, [boardWidthState]);
+    useEffect(() => {
         var boardWidthAsString = boardWidth.toString();
 
-        if(boardWidthAsString !== boardWidthState){
+        if (boardWidthAsString !== boardWidthState) {
             setBoardWidthState(boardWidthAsString);
-        }  
-    },[boardWidth]);
+        }
+    }, [boardWidth]);
 
     useEffect(() => {
         var valueAsNumber = parseFloat(boardHeightState);
 
-        if(valueAsNumber && (valueAsNumber !== boardHeight)){
+        if (valueAsNumber && (valueAsNumber !== boardHeight)) {
             dispatcher(setBoardHeight(valueAsNumber));
         }
-    },[boardHeightState]); 
-    useEffect(()=>{
+    }, [boardHeightState]);
+    useEffect(() => {
         var boardHeightAsString = boardHeight.toString();
 
-        if(boardHeightAsString !== boardHeightState){
+        if (boardHeightAsString !== boardHeightState) {
             setBoardHeightState(boardHeightAsString);
-        }  
-    },[boardHeight]);
+        }
+    }, [boardHeight]);
 
     useEffect(() => {
         var valueAsNumber = parseFloat(displacementState);
 
-        if(valueAsNumber && (valueAsNumber !== displacement)){
+        if (valueAsNumber && (valueAsNumber !== displacement)) {
             dispatcher(setDisplacement(valueAsNumber));
         }
-    },[displacementState]); 
-    useEffect(()=>{
+    }, [displacementState]);
+    useEffect(() => {
         var displacementAsString = displacement.toString();
 
-        if(displacementAsString !== displacementState){
+        if (displacementAsString !== displacementState) {
             setDisplacementState(displacementAsString);
-        }  
-    },[displacement]);
+        }
+    }, [displacement]);
+
+
+    function FormatValueBeforeSetState(value: string, setValue: (value: string) => void) {
+        value = value.replace(",", ".");
+        setValue(value);
+    }
 
     return (
         <>
@@ -103,11 +109,7 @@ export default function ParametersForm(props: ParametersFormProps) {
                         size="small"
                         defaultValue={boardWidthState}
                         value={boardWidthState}
-                        onChange={(e) => {
-                            var {value} = e.target;
-                            value = value.replace(",","."); 
-                            setBoardWidthState(value);
-                        }}
+                        onChange={(e) => FormatValueBeforeSetState(e.target.value, setBoardWidthState)}
                     />
                 </ListItem>
                 <ListItem>
@@ -118,11 +120,7 @@ export default function ParametersForm(props: ParametersFormProps) {
                         size="small"
                         defaultValue={boardHeightState}
                         value={boardHeightState}
-                        onChange={(e) => {
-                            var {value} = e.target;
-                            value = value.replace(",","."); 
-                            setBoardHeightState(value);
-                        }}
+                        onChange={(e) => FormatValueBeforeSetState(e.target.value, setBoardHeightState)}
                     />
                 </ListItem>
                 <ListItem>
@@ -133,11 +131,7 @@ export default function ParametersForm(props: ParametersFormProps) {
                         size="small"
                         defaultValue={displacementState}
                         value={displacementState}
-                        onChange={(e) => {
-                            var {value} = e.target;
-                            value = value.replace(",","."); 
-                            setDisplacementState(value);
-                        }}
+                        onChange={(e) => FormatValueBeforeSetState(e.target.value, setDisplacementState)}
                     />
                 </ListItem>
                 <ListItem>
