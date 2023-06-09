@@ -5,8 +5,9 @@ import Button from '@mui/material/Button';
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { setBoardWidth, setBoardHeight, setDisplacement, setPhaseNumber, setAxisFirstCut } from '../../redux/slices/cutterslice';
 import { eAxis, eAxisStrings } from "../../common/cutter/eAxis";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ParametersFormProps from "./ParametersFormProps";
+import { useDispatch } from "react-redux";
 
 const subheader = (<ListSubheader>Parameters</ListSubheader>);
 
@@ -20,6 +21,56 @@ export default function ParametersForm(props: ParametersFormProps) {
             displacement === undefined ||
             isNaN(displacement)
     }, [displacement]);
+ 
+   
+    const [boardWidthState,setBoardWidthState] = useState(boardWidth.toString());
+    const [boardHeightState,setBoardHeightState] = useState(boardHeight.toString());
+    const [displacementState,setDisplacementState] = useState(displacement.toString());
+    useEffect(() => {
+        var valueAsNumber = parseFloat(boardWidthState);
+
+        if(valueAsNumber && (valueAsNumber !== boardWidth)){
+            dispatcher(setBoardWidth(valueAsNumber));
+        }
+    },[boardWidthState]); 
+    useEffect(()=>{
+        var boardWidthAsString = boardWidth.toString();
+
+        if(boardWidthAsString !== boardWidthState){
+            setBoardWidthState(boardWidthAsString);
+        }  
+    },[boardWidth]);
+
+    useEffect(() => {
+        var valueAsNumber = parseFloat(boardHeightState);
+
+        if(valueAsNumber && (valueAsNumber !== boardHeight)){
+            dispatcher(setBoardHeight(valueAsNumber));
+        }
+    },[boardHeightState]); 
+    useEffect(()=>{
+        var boardHeightAsString = boardHeight.toString();
+
+        if(boardHeightAsString !== boardHeightState){
+            setBoardHeightState(boardHeightAsString);
+        }  
+    },[boardHeight]);
+
+    useEffect(() => {
+        var valueAsNumber = parseFloat(displacementState);
+
+        if(valueAsNumber && (valueAsNumber !== displacement)){
+            dispatcher(setDisplacement(valueAsNumber));
+        }
+    },[displacementState]); 
+    useEffect(()=>{
+        var displacementAsString = displacement.toString();
+
+        if(displacementAsString !== displacementState){
+            setDisplacementState(displacementAsString);
+        }  
+    },[displacement]);
+
     return (
         <>
             <List subheader={subheader}>
@@ -50,9 +101,13 @@ export default function ParametersForm(props: ParametersFormProps) {
                         label="Board width"
                         variant="outlined"
                         size="small"
-                        defaultValue={boardWidth}
-                        value={boardWidth}
-                        onChange={(e) => dispatcher(setBoardWidth(parseInt(e.target.value)))}
+                        defaultValue={boardWidthState}
+                        value={boardWidthState}
+                        onChange={(e) => {
+                            var {value} = e.target;
+                            value = value.replace(",","."); 
+                            setBoardWidthState(value);
+                        }}
                     />
                 </ListItem>
                 <ListItem>
@@ -61,9 +116,13 @@ export default function ParametersForm(props: ParametersFormProps) {
                         label="Board height"
                         variant="outlined"
                         size="small"
-                        defaultValue={boardHeight}
-                        value={boardHeight}
-                        onChange={(e) => dispatcher(setBoardHeight(parseInt(e.target.value)))}
+                        defaultValue={boardHeightState}
+                        value={boardHeightState}
+                        onChange={(e) => {
+                            var {value} = e.target;
+                            value = value.replace(",","."); 
+                            setBoardHeightState(value);
+                        }}
                     />
                 </ListItem>
                 <ListItem>
@@ -72,9 +131,13 @@ export default function ParametersForm(props: ParametersFormProps) {
                         label="Displacement"
                         variant="outlined"
                         size="small"
-                        defaultValue={displacement}
-                        value={displacement}
-                        onChange={(e) => dispatcher(setDisplacement(parseInt(e.target.value)))}
+                        defaultValue={displacementState}
+                        value={displacementState}
+                        onChange={(e) => {
+                            var {value} = e.target;
+                            value = value.replace(",","."); 
+                            setDisplacementState(value);
+                        }}
                     />
                 </ListItem>
                 <ListItem>
