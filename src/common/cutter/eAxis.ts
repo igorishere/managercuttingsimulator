@@ -1,4 +1,4 @@
-export enum eAxis{
+export enum eAxis {
     Horizontal = "Horizontal",
     Vertical = "Vertical"
 }

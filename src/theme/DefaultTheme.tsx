@@ -1,14 +1,14 @@
-import {ThemeOptions} from '@mui/material/styles'
+import { ThemeOptions } from '@mui/material/styles'
 
 export const DefaultTheme: ThemeOptions = {
-  palette: { 
+  palette: {
     primary: {
       main: '#0E8388',
     },
     secondary: {
       main: '#2E4F4F',
     },
-    background:{
+    background: {
       default: '#2C3333'
     }
   },

@@ -7,8 +7,8 @@ import './App.css';
 const theme = createTheme(DefaultTheme);
 
 export default function App() {
-    return ( 
-        <div id='appWrapper'>  
+    return (
+        <div id='appWrapper'>
             <ThemeProvider theme={theme}>
                 <AppBar position='relative'>
                     <Typography
@@ -17,6 +17,6 @@ export default function App() {
                 </AppBar>
                 <TabsControl />
             </ThemeProvider>
-        </div> 
+        </div>
     );
 };

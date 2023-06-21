@@ -1,4 +1,4 @@
-export default interface ParametersFormProps{
+export default interface ParametersFormProps {
     performNewCut: () => void | null,
     clearCurrentBoard: () => void | null
 };

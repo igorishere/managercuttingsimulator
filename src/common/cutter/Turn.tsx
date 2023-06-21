@@ -1,24 +1,24 @@
 import IPosition from "../IPosition";
-import ITurn from "./ITurn";  
+import ITurn from "./ITurn";
 import { eAxis } from "./eAxis";
 
-export default class Turn implements ITurn{
+export default class Turn implements ITurn {
 
     readonly index: number;
     readonly startPoint: IPosition;
     readonly cutAxis: eAxis;
     readonly width: number;
-    readonly height: number; 
+    readonly height: number;
     public get cutsCount(): number { return this._cutsCount };
     private _cutsCount: number;
-    public get closed(): boolean {return this._closed};
+    public get closed(): boolean { return this._closed };
     private _closed: boolean;
     public get maxAcceptableDisplacement(): number { return this._maxAcceptableDisplacement };
     private _maxAcceptableDisplacement: number;
     public get usedDisplacement(): number { return this._usedDisplacement };
     private _usedDisplacement: number;
-    
-    constructor(index: number, maxAcceptableDisplacement: number, startPoint: IPosition, axis: eAxis,width: number,height:number){
+
+    constructor(index: number, maxAcceptableDisplacement: number, startPoint: IPosition, axis: eAxis, width: number, height: number) {
         this.index = index !== null ? index : null;
         this.startPoint = startPoint !== null ? startPoint : null;
         this.cutAxis = axis;
@@ -29,16 +29,16 @@ export default class Turn implements ITurn{
         this._cutsCount = 0;
         this._closed = false;
     }
-    
-    public executeCut(displacement:number): void {
-        if(this._closed === true) return;
+
+    public executeCut(displacement: number): void {
+        if (this._closed === true) return;
 
         this._usedDisplacement = this._usedDisplacement + displacement;
         this._maxAcceptableDisplacement = this._maxAcceptableDisplacement - displacement;
         this._cutsCount += 1;
     }
 
-    public closeTurn(): void{
+    public closeTurn(): void {
         this._closed = true;
     }
 }

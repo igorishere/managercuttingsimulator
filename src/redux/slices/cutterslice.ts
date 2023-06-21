@@ -1,8 +1,8 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit' 
+import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { eAxis } from '../../common/cutter/eAxis';
 import { DefaultParameters } from '../../common/parameters/DefaultParameters';
 
-interface CutterState{
+interface CutterState {
     boardWidth: number,
     boardHeight: number,
     displacement: number,
@@ -20,13 +20,12 @@ const cutterState: CutterState = {
 }
 
 
-const ValidateParameters = (parameter: number): number =>{
-    
+const ValidateParameters = (parameter: number): number => {
+
     if (parameter === null ||
         parameter === undefined ||
         isNaN(parameter) ||
-        parameter < 0  ) 
-    {
+        parameter < 0) {
         return 0;
     }
 
@@ -36,7 +35,7 @@ const ValidateParameters = (parameter: number): number =>{
 export const cutterSlice = createSlice({
     name: 'cutter',
     initialState: cutterState,
-    reducers:{
+    reducers: {
         setBoardWidth: (state, action: PayloadAction<number>) => {
             const parameter = ValidateParameters(action.payload);
             state.boardWidth = parameter;
@@ -61,5 +60,5 @@ export const cutterSlice = createSlice({
     }
 });
 
-export const {setBoardWidth,setBoardHeight,setDisplacement,setPhaseNumber,setAxisFirstCut} = cutterSlice.actions;
+export const { setBoardWidth, setBoardHeight, setDisplacement, setPhaseNumber, setAxisFirstCut } = cutterSlice.actions;
 export default cutterSlice.reducer;

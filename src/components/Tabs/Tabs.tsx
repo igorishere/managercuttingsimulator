@@ -25,8 +25,8 @@ export default function TabsControl() {
             <TabContent index={0} currentIndex={indexSelectedTab}>
                 <Box sx={{
                     display: 'flex',
-                    flexDirection:'row',
-                    justifyContent:'center',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
                     marginTop: '150px'
                 }}>
                     <Typography variant={"h5"}>
@@ -34,7 +34,7 @@ export default function TabsControl() {
                     </Typography>
                     <ImagesearchRollerIcon fontSize="large" />
                 </Box>
-            </TabContent>  
+            </TabContent>
             <TabContent index={1} currentIndex={indexSelectedTab}>
                 <SandboxArea />
             </TabContent>
