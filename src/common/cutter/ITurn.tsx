@@ -8,5 +8,6 @@ export default interface ITurn{
     cutAxis: eAxis;
     closed: boolean;
     width: number;
-    height:number; 
+    height:number;  
+    cutsCount: number;
 };

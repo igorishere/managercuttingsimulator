@@ -4,8 +4,10 @@ import Alert from '@mui/material/Alert';
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import ParametersForm from "../ParametersForm/ParametersForm";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { TurnManager } from "../../common/cutter/TurnManager";
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { eAxis } from "../../common/cutter/eAxis";
 import { Utils } from "../../common/Utils";
@@ -31,6 +33,8 @@ export default function SandboxArea() {
     useEffect(() => DefineBoardSize(), [boardWidth, boardHeight]);
     const [feedbackMessage, setFeedbackMessage] = useState("");
     const [openSnackBar, setOpenSnackbar] = useState(false);
+    const [turnsCount, setTurnsCount] = useState(0);
+    const [cutsCount, setCutsCount] = useState(0);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -50,6 +54,11 @@ export default function SandboxArea() {
 
         canvas.width = boardWithInPixels / aspectRatio;
         canvas.height = boardHeightInPixels / aspectRatio;
+    }
+
+    function UpdateStatusBar(): void {
+        setTurnsCount(turnManager.GetUsedTurnsCount() ?? 0);
+        setCutsCount(turnManager.GetCutsCount() ?? 0);
     }
 
     function PerformNewCut(): void {
@@ -78,8 +87,9 @@ export default function SandboxArea() {
         var start = result[0];
         var end = result[1];
 
-        turn.updateUsedDisplacement(displacement);
+        turn.executeCut(displacement);
         DrawLine(start, end);
+        UpdateStatusBar();
     }
 
     function ClearCanvas(): void {
@@ -102,6 +112,7 @@ export default function SandboxArea() {
             DefaultFirstCutAxis
         } = DefaultParameters;
 
+        UpdateStatusBar();
 
         dispatcher(setPhaseNumber(DefaultPhaseNumber));
         dispatcher(setDisplacement(DefaultDisplacement));
@@ -167,20 +178,28 @@ export default function SandboxArea() {
     function CloseSnackBar(): void {
         setOpenSnackbar(false);
     }
+
     return (
         <Box
             sx={{
                 bgcolor: '#E7E7E7',
                 height: '92%',
-                padding:'20px', 
+                padding: '20px',
             }}>
             <Grid
-                container 
+                container
                 spacing={4}
                 height={'100%'}>
                 <Grid item xs={8}>
-                    <Paper id='canvasWrapper'>
-                        <canvas id='canvas' ref={canvasRef}></canvas>
+                    <Paper id='cuttingPlanWrapper'>
+                        <Stack id="cuttingPlanStatusBar" direction="row" spacing={1}>
+                            <Chip label={`Cuts: ${cutsCount}`} color="primary" />
+                            <Chip label={`Turns: ${turnsCount}`} color="primary" />
+                            <Chip label="Parts: 9" color="primary" />
+                        </Stack>
+                        <div id="canvasWrapper">
+                            <canvas id='canvas' ref={canvasRef}></canvas>
+                        </div>
                     </Paper>
                     <Snackbar
                         open={openSnackBar}

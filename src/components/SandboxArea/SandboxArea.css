@@ -1,9 +1,19 @@
-#canvasWrapper{
+#cuttingPlanWrapper{
     height: 100%;
     padding: 8px;  
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; 
+    flex-direction: column;
+}
+
+#canvasWrapper{
+    height: 100%;
+    width: 100%; 
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    border: 1px solid #2E4F4F;
 }
 
 
@@ -13,3 +23,8 @@
     border: 1px solid #929292;
     border-radius: 5px; 
 } 
+
+#cuttingPlanStatusBar{ 
+    width: 100%;
+    margin: 5px;
+}

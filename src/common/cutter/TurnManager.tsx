@@ -1,12 +1,30 @@
 import Turn from "./Turn";
 import { eAxis } from "./eAxis";
 export class TurnManager{
-    
+     
     public get turns(): Array<Turn> { return this._turns };
     private _turns: Array<Turn>;
 
     constructor(){
       this._turns = new Array<Turn>();
+    }
+     
+    public GetUsedTurnsCount() : number{
+      return   this._turns
+                    .map(turn => turn.index)
+                    .filter((number,index,list) => list.indexOf(number) === index)
+                    .length;
+    }
+    
+    public GetCutsCount(): number{
+
+      var cutsCount = 0;
+
+      this._turns.forEach( (turn) =>{
+        cutsCount += turn.cutsCount;
+      } )
+
+      return cutsCount;
     }
 
     public Start(firstTurnWidth: number, firstTurnHeight: number, firstCutAxis: eAxis): void{
