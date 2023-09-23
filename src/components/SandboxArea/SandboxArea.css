@@ -1,5 +1,4 @@
 #cuttingPlanWrapper {
-    height: 100%;
     padding: 8px;
     display: flex;
     align-items: center;
@@ -7,12 +6,9 @@
     flex-direction: column;
 }
 
-#canvasWrapper {
-    height: 100%;
+#cuttingPlanCanvasWrapper {
+    height: calc(100vh - 250px);
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center; 
     border: 1px solid #929292;
 }
 
