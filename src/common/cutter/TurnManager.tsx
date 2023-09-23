@@ -21,7 +21,7 @@ export class TurnManager {
     var cutsCount = 0;
 
     this._turns.forEach((turn) => {
-      cutsCount += turn.cutsCount;
+      cutsCount += turn.getCutsCount();
     })
 
     return cutsCount;

@@ -1,4 +1,5 @@
 import IPosition from "../IPosition";
+import Cut from "./Cut";
 import ITurn from "./ITurn";
 import { eAxis } from "./eAxis";
 
@@ -9,9 +10,8 @@ export default class Turn implements ITurn {
     readonly cutAxis: eAxis;
     readonly width: number;
     readonly height: number;
-    public get cutsCount(): number { return this._cutsCount };
-    private _cutsCount: number;
-    public get closed(): boolean { return this._closed };
+    public get cuts(): Cut[] { return this._cuts };
+    private _cuts: Cut[]; public get closed(): boolean { return this._closed };
     private _closed: boolean;
     public get maxAcceptableDisplacement(): number { return this._maxAcceptableDisplacement };
     private _maxAcceptableDisplacement: number;
@@ -26,19 +26,33 @@ export default class Turn implements ITurn {
         this.height = height;
         this._maxAcceptableDisplacement = maxAcceptableDisplacement !== null ? maxAcceptableDisplacement : null;
         this._usedDisplacement = 0;
-        this._cutsCount = 0;
+        this._cuts = new Array<Cut>();
         this._closed = false;
     }
 
-    public executeCut(displacement: number): void {
+    public executeCut(displacement: number, margin: number): void {
         if (this._closed === true) return;
 
-        this._usedDisplacement = this._usedDisplacement + displacement;
-        this._maxAcceptableDisplacement = this._maxAcceptableDisplacement - displacement;
-        this._cutsCount += 1;
+        const displacementWithCut = displacement + margin;
+        this._usedDisplacement = this._usedDisplacement + displacementWithCut;
+        this._maxAcceptableDisplacement = this._maxAcceptableDisplacement - displacementWithCut;
+
+        var lastCut = this._cuts[this._cuts.length - 1];
+
+        var index;
+
+        if (lastCut) {
+            index = lastCut.Index + 1;
+        } else {
+            index = 1;
+        }
+
+        var cut = new Cut(displacement, index);
+        this._cuts.push(cut);
     }
 
     public closeTurn(): void {
         this._closed = true;
     }
+    public getCutsCount(): number { return this._cuts.length }
 }
