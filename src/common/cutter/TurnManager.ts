@@ -1,3 +1,4 @@
+import ITurn from "./ITurn";
 import Turn from "./Turn";
 import { eAxis } from "./eAxis";
 export class TurnManager {
@@ -48,55 +49,17 @@ export class TurnManager {
     this._turns.push(turn);
   }
 
-  public GetTurnByIndex(phaseNumber: number, lastDisplacementAxisY: number, lastDisplacementAxisX: number): Turn {
-
-    var previousPhase = this.GetOpenedTurnByIndex(phaseNumber - 1);
-    var currentPhase = this.GetOpenedTurnByIndex(phaseNumber);
-    var nextPhase = this.GetOpenedTurnByIndex(phaseNumber + 1);
+  public GetTurnByIndex(phaseIndex: number): Turn {
+    var nextPhase = this.GetOpenedTurnByIndex(phaseIndex + 1);
+    var currentPhase = this.GetOpenedTurnByIndex(phaseIndex);
 
     if (currentPhase) {
       if (nextPhase)
         this.CloseAllNextTurns(nextPhase);
-
-      return currentPhase;
     }
-
-    if (previousPhase) {
-
-      var startPoint = null;
-      var maxAcceptableDisplacement, width, height;
-
-      if (previousPhase.cutAxis == eAxis.Horizontal) {
-        var positionY = previousPhase.usedDisplacement - lastDisplacementAxisY;
-
-        positionY = positionY >= 0 ? positionY : 0;
-
-        startPoint = {
-          X: previousPhase.startPoint.X,
-          Y: positionY
-        };
-
-        maxAcceptableDisplacement = previousPhase.width;
-        width = previousPhase.width;
-        height = lastDisplacementAxisY;
-      } else {
-
-        var positionX = previousPhase.usedDisplacement - lastDisplacementAxisX;
-
-        positionX = positionX >= 0 ? positionX : 0;
-
-        startPoint = {
-          X: positionX,
-          Y: previousPhase.startPoint.Y
-        };
-
-        maxAcceptableDisplacement = previousPhase.height;
-        width = lastDisplacementAxisX;
-        height = previousPhase.height;
-      }
-
-      currentPhase = new Turn(phaseNumber, maxAcceptableDisplacement, startPoint, this.OppositeAxis(previousPhase.cutAxis), width, height);
-
+    else {
+      var previousPhase = this.GetOpenedTurnByIndex(phaseIndex - 1);
+      currentPhase = this.CreateNewPhase(previousPhase);
       this._turns.push(currentPhase);
     }
 
@@ -114,5 +77,46 @@ export class TurnManager {
 
     if (nextPhase)
       this.CloseAllNextTurns(nextPhase);
+  }
+
+  private CreateNewPhase(previousPhase: Turn): Turn {
+    var startPoint = null;
+    var maxAcceptableDisplacement, width, height;
+    var lastCut = previousPhase.cuts[previousPhase.cuts.length - 1];
+    var lastDisplacement = lastCut.Displacement;
+    var lastDisplacementWithMargin = (lastCut.Displacement + lastCut.Margin) ?? 0;
+    var phaseNumber = previousPhase.index + 1;
+
+    if (previousPhase.cutAxis == eAxis.Horizontal) {
+      var positionY = previousPhase.usedDisplacement - lastDisplacementWithMargin;
+
+      positionY = positionY >= 0 ? positionY : 0;
+
+      startPoint = {
+        X: previousPhase.startPoint.X,
+        Y: positionY
+      };
+      var previsouPhaseWidth = previousPhase.width;
+      maxAcceptableDisplacement = previsouPhaseWidth;
+      width = previsouPhaseWidth;
+      height = lastDisplacement;
+    } else {
+
+      var positionX = previousPhase.usedDisplacement - lastDisplacementWithMargin;
+
+      positionX = positionX >= 0 ? positionX : 0;
+
+      startPoint = {
+        X: positionX,
+        Y: previousPhase.startPoint.Y
+      };
+
+      var previousPhaseHeight = previousPhase.height;
+      maxAcceptableDisplacement = previousPhaseHeight
+      width = lastDisplacement;
+      height = previousPhaseHeight;
+    }
+
+    return new Turn(phaseNumber, maxAcceptableDisplacement, startPoint, this.OppositeAxis(previousPhase.cutAxis), width, height);
   }
 }

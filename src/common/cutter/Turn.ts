@@ -47,7 +47,7 @@ export default class Turn implements ITurn {
             index = 1;
         }
 
-        var cut = new Cut(displacement, index);
+        var cut = new Cut(displacement, margin, index);
         this._cuts.push(cut);
     }
 

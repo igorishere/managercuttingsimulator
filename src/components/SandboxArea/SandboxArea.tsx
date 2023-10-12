@@ -6,6 +6,7 @@ import Paper from "@mui/material/Paper";
 import ParametersForm from "../ParametersForm/ParametersForm";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TurnManager } from "../../common/cutter/TurnManager";
+import { TurnToRectangleConverter } from "../../common/cutter/TurnToRectangleConverter";
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
@@ -18,12 +19,14 @@ import './SandboxArea.css';
 import { DefaultParameters } from "../../common/parameters/DefaultParameters";
 import { DefaultTheme } from "../../theme/DefaultTheme";
 import createTheme from "@mui/material/styles/createTheme";
-
-let lastDisplacementAxisX: number = 0;
-let lastDisplacementAxisY: number = 0;
-let aspectRatio = 0;
+import Canvas from "../Canvas/Canvas";
+import Rect from "../Canvas/Rect";
+import ILineOptions from "../Canvas/ILineOptions";
+import Board from "./CuttingPlanElements/Board";
+import Part from "./CuttingPlanElements/Part";
 
 let turnManager = new TurnManager();
+let turnToRectangleConverter = new TurnToRectangleConverter();
 export default function SandboxArea() {
 
     const { boardWidth, boardHeight, displacement, phaseNumber, axisFirstCut } = useAppSelector(state => state.cutter);
@@ -35,13 +38,16 @@ export default function SandboxArea() {
     const [openSnackBar, setOpenSnackbar] = useState(false);
     const [turnsCount, setTurnsCount] = useState(0);
     const [cutsCount, setCutsCount] = useState(0);
+    const [elementsToDraw, setElementsToDraw] = useState(Array<Rect>);
+    const [aspectRatio, setAspectRatio] = useState(0);
+    const [startPointCanvas, setStartPointCanvas] = useState({ X: 0, Y: 0 });
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const cuttingPlanCanvasWrapperReference = useRef<HTMLDivElement>(null);
 
     function DefineBoardSize(): void {
-        let canvas = canvasRef.current;
-        var container = document.getElementById('canvasWrapper') as HTMLDivElement;
 
+        var container = cuttingPlanCanvasWrapperReference.current;
         let { clientWidth, clientHeight } = container;
 
         var boardWithInPixels = Utils.ConvertMilimetersToPixels(boardWidth);
@@ -50,10 +56,25 @@ export default function SandboxArea() {
         var ratioW: number = boardWithInPixels / (clientWidth - 50);
         var ratioH: number = boardHeightInPixels / (clientHeight - 50);
 
-        aspectRatio = Math.max(ratioW, ratioH);
+        var maxAspectRatio = Math.max(ratioW, ratioH)
+        setAspectRatio(maxAspectRatio);
 
-        canvas.width = boardWithInPixels / aspectRatio;
-        canvas.height = boardHeightInPixels / aspectRatio;
+        var rectWidth = boardWithInPixels / maxAspectRatio;
+        var rectHeight = boardHeightInPixels / maxAspectRatio;
+
+        var X = -(rectWidth / 2);
+        var Y = -(rectHeight / 2);
+        setStartPointCanvas({ X, Y });
+
+        var lineOptions = {
+            color: "#000",
+            thickness: 1.3
+        }
+        var parts = new Array<Rect>();
+        setElementsToDraw(parts);
+        var board = new Board(rectWidth, rectHeight, X, Y, "#DFF1E6", lineOptions);
+        var newElements = [board];
+        setElementsToDraw(newElements);
     }
 
     function UpdateStatusBar(): void {
@@ -63,11 +84,10 @@ export default function SandboxArea() {
 
     function PerformNewCut(): void {
 
-        if (turnManager.turns.length === 0) {
+        if (turnManager.turns.length === 0)
             turnManager.Start(boardWidth, boardHeight, axisFirstCut);
-        }
 
-        var turn = turnManager.GetTurnByIndex(phaseNumber, lastDisplacementAxisY, lastDisplacementAxisX);
+        var turn = turnManager.GetTurnByIndex(phaseNumber);
 
         if (turn === undefined || turn === null) return;
 
@@ -83,24 +103,56 @@ export default function SandboxArea() {
             return;
         }
 
-        var result = GetInitalAndFinalCoordinates(turn, displacement);
-        var start = result[0];
-        var end = result[1];
+        var margin = 20;
+        turn.executeCut(displacement, margin);
+        var parts = turnToRectangleConverter.ConvertTurn(turn, margin, aspectRatio, startPointCanvas);
 
-        turn.executeCut(displacement);
-        DrawLine(start, end);
+        var newParts = elementsToDraw.filter(element => {
+            var partWithSamePosition = parts.filter(el => el.x === element.x && el.y === element.y)[0];
+
+            if (partWithSamePosition) {
+
+                if (element.width === partWithSamePosition.width) {
+                    return element.height <= partWithSamePosition.height;
+                }
+
+                if (element.height === partWithSamePosition.height) {
+                    return element.width <= partWithSamePosition.width
+                }
+
+                return false;
+            }
+            return true;
+        });
+        var newElem = parts.filter(element => {
+            var partWithSamePosition = elementsToDraw.filter(el => el.x === element.x && el.y === element.y)[0];
+
+            if (partWithSamePosition) {
+
+                if (element.width === partWithSamePosition.width) {
+                    return element.height <= partWithSamePosition.height;
+                }
+
+                if (element.height === partWithSamePosition.height) {
+                    return element.width <= partWithSamePosition.width
+                }
+
+                return false;
+            }
+            return true;
+        });
+
+        setElementsToDraw(newParts.concat(newElem));
+        //Draw();
         UpdateStatusBar();
     }
 
+
     function ClearCanvas(): void {
-        var canvas = canvasRef.current;
-        var context = canvas.getContext("2d");
 
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        context.beginPath();
+        var board = elementsToDraw.filter((rect => rect instanceof Board));
 
-        lastDisplacementAxisX = canvas.width;
-        lastDisplacementAxisY = canvas.height;
+        setElementsToDraw(board);
 
         turnManager = new TurnManager();
 
@@ -113,6 +165,7 @@ export default function SandboxArea() {
         } = DefaultParameters;
 
         UpdateStatusBar();
+        DefineBoardSize();
 
         dispatcher(setPhaseNumber(DefaultPhaseNumber));
         dispatcher(setDisplacement(DefaultDisplacement));
@@ -130,51 +183,6 @@ export default function SandboxArea() {
         context.stroke();
     }
 
-    function GetInitalAndFinalCoordinates(turn: Turn, displacement: number): [start: IPosition, end: IPosition] {
-        var { startPoint, usedDisplacement, cutAxis } = turn;
-
-        let usedDisplacementInPixels = Utils.ConvertMilimetersToPixels(usedDisplacement) / aspectRatio;
-        let displacementInPixels = Utils.ConvertMilimetersToPixels(displacement) / aspectRatio;
-        var startPointYInPixels = Utils.ConvertMilimetersToPixels(startPoint.Y) / aspectRatio;
-        var startPointXInPixels = Utils.ConvertMilimetersToPixels(startPoint.X) / aspectRatio;
-
-        let start = {
-            X: 0,
-            Y: 0
-        }
-
-        let end = {
-            X: 0,
-            Y: 0
-        }
-
-
-        if (cutAxis === eAxis.Horizontal) {
-            startPointYInPixels = startPointYInPixels + usedDisplacementInPixels + displacementInPixels;
-
-            start.X = startPointXInPixels;
-            start.Y = startPointYInPixels;
-
-            end.X = startPointXInPixels + (Utils.ConvertMilimetersToPixels(turn.width) / aspectRatio);
-            end.Y = startPointYInPixels;
-
-            lastDisplacementAxisY = Utils.ConvertPixelsToMilimeters(displacementInPixels) * aspectRatio;
-        }
-
-        if (cutAxis === eAxis.Vertical) {
-            startPointXInPixels = startPointXInPixels + usedDisplacementInPixels + displacementInPixels;
-
-            start.X = startPointXInPixels;
-            start.Y = startPointYInPixels;
-
-            end.X = startPointXInPixels;
-            end.Y = startPointYInPixels + (Utils.ConvertMilimetersToPixels(turn.height) / aspectRatio);
-            lastDisplacementAxisX = Utils.ConvertPixelsToMilimeters(displacementInPixels) * aspectRatio;
-        }
-
-        return [start, end];
-    }
-
     function CloseSnackBar(): void {
         setOpenSnackbar(false);
     }
@@ -189,7 +197,7 @@ export default function SandboxArea() {
             <Grid
                 container
                 spacing={4}
-                height={'100%'}>
+            >
                 <Grid item xs={8}>
                     <Paper id='cuttingPlanWrapper'>
                         <Stack id="cuttingPlanStatusBar" direction="row" spacing={1}>
@@ -197,8 +205,8 @@ export default function SandboxArea() {
                             <Chip label={`Turns: ${turnsCount}`} color="primary" />
                             <Chip label="Parts: 9" color="primary" />
                         </Stack>
-                        <div id="canvasWrapper">
-                            <canvas id='canvas' ref={canvasRef}></canvas>
+                        <div id="cuttingPlanCanvasWrapper" ref={cuttingPlanCanvasWrapperReference}>
+                            <Canvas elements={elementsToDraw} />
                         </div>
                     </Paper>
                     <Snackbar
@@ -230,4 +238,4 @@ export default function SandboxArea() {
         </Box>
 
     );
-} 
+}  
