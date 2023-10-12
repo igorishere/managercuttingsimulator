@@ -39,7 +39,6 @@ export class TurnToRectangleConverter {
         var xTurn = this.ToPixels(turn.startPoint.X);
         var yTurn = this.ToPixels(turn.startPoint.Y);
         var currentStartPoint = { X: startPoint.X + xTurn, Y: startPoint.Y + yTurn };
-        var marginInPixels = this.ToPixels(margin);
         var lineOptions = {
             color: "#000",
             thickness: 1.3
@@ -52,6 +51,7 @@ export class TurnToRectangleConverter {
                 var displacementInPixels = this.ToPixels(cut.Displacement);
                 this.AddPart(widthInPixels, displacementInPixels, currentStartPoint.X, currentStartPoint.Y, "#46878A", lineOptions);
 
+                var marginInPixels = this.ToPixels(cut.Margin);
                 var fullHeight = displacementInPixels + marginInPixels;
                 remainingHeight = remainingHeight - fullHeight;
                 currentStartPoint.Y = currentStartPoint.Y + fullHeight;
@@ -66,6 +66,7 @@ export class TurnToRectangleConverter {
                 var displacementInPixels = this.ToPixels(cut.Displacement);
                 this.AddPart(displacementInPixels, heightInPixels, currentStartPoint.X, currentStartPoint.Y, "#46878A", lineOptions);
 
+                var marginInPixels = this.ToPixels(cut.Margin);
                 var fullWidth = displacementInPixels + marginInPixels;
                 remainingWidth = remainingWidth - fullWidth;
                 currentStartPoint.X = currentStartPoint.X + fullWidth;

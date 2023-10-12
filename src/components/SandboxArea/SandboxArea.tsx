@@ -4,15 +4,13 @@ import Alert from '@mui/material/Alert';
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import ParametersForm from "../ParametersForm/ParametersForm";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TurnManager } from "../../common/cutter/TurnManager";
 import { TurnToRectangleConverter } from "../../common/cutter/TurnToRectangleConverter";
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
-import { eAxis } from "../../common/cutter/eAxis";
 import { Utils } from "../../common/Utils";
-import Turn from "../../common/cutter/Turn";
 import IPosition from "../../common/IPosition";
 import { setAxisFirstCut, setBoardHeight, setBoardWidth, setDisplacement, setPhaseNumber } from "../../redux/slices/cutterslice";
 import './SandboxArea.css';
@@ -21,9 +19,7 @@ import { DefaultTheme } from "../../theme/DefaultTheme";
 import createTheme from "@mui/material/styles/createTheme";
 import Canvas from "../Canvas/Canvas";
 import Rect from "../Canvas/Rect";
-import ILineOptions from "../Canvas/ILineOptions";
 import Board from "./CuttingPlanElements/Board";
-import Part from "./CuttingPlanElements/Part";
 
 let turnManager = new TurnManager();
 let turnToRectangleConverter = new TurnToRectangleConverter();
@@ -106,45 +102,30 @@ export default function SandboxArea() {
         var margin = 20;
         turn.executeCut(displacement, margin);
         var parts = turnToRectangleConverter.ConvertTurn(turn, margin, aspectRatio, startPointCanvas);
-
-        var newParts = elementsToDraw.filter(element => {
-            var partWithSamePosition = parts.filter(el => el.x === element.x && el.y === element.y)[0];
-
-            if (partWithSamePosition) {
-
-                if (element.width === partWithSamePosition.width) {
-                    return element.height <= partWithSamePosition.height;
-                }
-
-                if (element.height === partWithSamePosition.height) {
-                    return element.width <= partWithSamePosition.width
-                }
-
-                return false;
-            }
-            return true;
-        });
-        var newElem = parts.filter(element => {
-            var partWithSamePosition = elementsToDraw.filter(el => el.x === element.x && el.y === element.y)[0];
-
-            if (partWithSamePosition) {
-
-                if (element.width === partWithSamePosition.width) {
-                    return element.height <= partWithSamePosition.height;
-                }
-
-                if (element.height === partWithSamePosition.height) {
-                    return element.width <= partWithSamePosition.width
-                }
-
-                return false;
-            }
-            return true;
-        });
-
+        var newParts = Except(elementsToDraw,parts);
+        var newElem = Except(parts,elementsToDraw);
         setElementsToDraw(newParts.concat(newElem));
-        //Draw();
         UpdateStatusBar();
+    }
+
+    function Except(firstArray: Rect[], secondArray: Rect[],): Rect[]{
+        return firstArray.filter(element => {
+            var partWithSamePosition = secondArray.filter(el => el.x === element.x && el.y === element.y)[0];
+
+            if (partWithSamePosition) {
+
+                if (element.width === partWithSamePosition.width) {
+                    return element.height <= partWithSamePosition.height;
+                }
+
+                if (element.height === partWithSamePosition.height) {
+                    return element.width <= partWithSamePosition.width
+                }
+
+                return false;
+            }
+            return true;
+        });
     }
 
 
@@ -172,15 +153,6 @@ export default function SandboxArea() {
         dispatcher(setBoardWidth(DefaultBoardWidth));
         dispatcher(setBoardHeight(DefaultBoardHeight));
         dispatcher(setAxisFirstCut(DefaultFirstCutAxis));
-    }
-
-    function DrawLine(start: IPosition, end: IPosition): void {
-        let canvas = canvasRef.current;
-        let context = canvas.getContext("2d");
-
-        context.moveTo(start.X, start.Y);
-        context.lineTo(end.X, end.Y);
-        context.stroke();
     }
 
     function CloseSnackBar(): void {
