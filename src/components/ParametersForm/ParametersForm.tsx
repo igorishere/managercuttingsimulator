@@ -3,17 +3,16 @@ import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
-import { setBoardWidth, setBoardHeight, setDisplacement, setPhaseNumber, setAxisFirstCut } from '../../redux/slices/cutterslice';
+import { setBoardWidth, setBoardHeight, setDisplacement, setPhaseNumber, setAxisFirstCut, setMargin } from '../../redux/slices/cutterslice';
 import { eAxis, eAxisStrings } from "../../common/cutter/eAxis";
-import { SetStateAction, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ParametersFormProps from "./ParametersFormProps";
-import { useDispatch } from "react-redux";
 
 const subheader = (<ListSubheader>Parameters</ListSubheader>);
 
 export default function ParametersForm(props: ParametersFormProps) {
 
-    const { boardWidth, boardHeight, displacement, phaseNumber, axisFirstCut } = useAppSelector(state => state.cutter);
+    const { boardWidth, boardHeight, displacement, phaseNumber, axisFirstCut, margin } = useAppSelector(state => state.cutter);
     const dispatcher = useAppDispatch();
     const performNewCutAllowed = useMemo(() => {
         return displacement === 0 ||
@@ -26,6 +25,7 @@ export default function ParametersForm(props: ParametersFormProps) {
     const [boardWidthState, setBoardWidthState] = useState(boardWidth.toString());
     const [boardHeightState, setBoardHeightState] = useState(boardHeight.toString());
     const [displacementState, setDisplacementState] = useState(displacement.toString());
+    const [marginState, setMarginState] = useState(margin.toString());
     useEffect(() => {
         var valueAsNumber = parseFloat(boardWidthState);
 
@@ -70,6 +70,21 @@ export default function ParametersForm(props: ParametersFormProps) {
             setDisplacementState(displacementAsString);
         }
     }, [displacement]);
+
+    useEffect(() => {
+        var valueAsNumber = parseFloat(marginState);
+
+        if (valueAsNumber && (valueAsNumber !== margin)) {
+            dispatcher(setMargin(valueAsNumber));
+        }
+    }, [marginState]);
+    useEffect(() => {
+        var marginAsString = margin.toString();
+
+        if (marginAsString !== marginState) {
+            setMarginState(marginAsString);
+        }
+    }, [margin]);
 
 
     function FormatValueBeforeSetState(value: string, setValue: (value: string) => void) {
@@ -132,6 +147,17 @@ export default function ParametersForm(props: ParametersFormProps) {
                         defaultValue={displacementState}
                         value={displacementState}
                         onChange={(e) => FormatValueBeforeSetState(e.target.value, setDisplacementState)}
+                    />
+                </ListItem>
+                <ListItem>
+                    <TextField
+                        sx={{ height: '40px' }}
+                        label="Tool thickness"
+                        variant="outlined"
+                        size="small"
+                        defaultValue={marginState}
+                        value={marginState}
+                        onChange={(e) => FormatValueBeforeSetState(e.target.value, setMarginState)}
                     />
                 </ListItem>
                 <ListItem>

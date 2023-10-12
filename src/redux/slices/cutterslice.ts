@@ -7,6 +7,7 @@ interface CutterState {
     boardHeight: number,
     displacement: number,
     phaseNumber: number,
+    margin: number,
     axisFirstCut: eAxis
 }
 
@@ -16,7 +17,8 @@ const cutterState: CutterState = {
     boardHeight: DefaultParameters.DefaultBoardHeight,
     displacement: DefaultParameters.DefaultDisplacement,
     phaseNumber: DefaultParameters.DefaultPhaseNumber,
-    axisFirstCut: DefaultParameters.DefaultFirstCutAxis
+    axisFirstCut: DefaultParameters.DefaultFirstCutAxis,
+    margin: DefaultParameters.DefaultMargin
 }
 
 
@@ -49,6 +51,10 @@ export const cutterSlice = createSlice({
             const parameter = ValidateParameters(action.payload);
             state.displacement = parameter;
         },
+        setMargin: (state, action: PayloadAction<number>) => {
+            const parameter = ValidateParameters(action.payload);
+            state.margin = parameter;
+        },
         setPhaseNumber: (state, action: PayloadAction<number>) => {
 
             const parameter = ValidateParameters(action.payload);
@@ -60,5 +66,5 @@ export const cutterSlice = createSlice({
     }
 });
 
-export const { setBoardWidth, setBoardHeight, setDisplacement, setPhaseNumber, setAxisFirstCut } = cutterSlice.actions;
+export const { setBoardWidth, setBoardHeight, setDisplacement, setPhaseNumber, setAxisFirstCut, setMargin } = cutterSlice.actions;
 export default cutterSlice.reducer;

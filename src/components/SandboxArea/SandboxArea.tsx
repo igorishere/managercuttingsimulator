@@ -11,8 +11,7 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import { Utils } from "../../common/Utils";
-import IPosition from "../../common/IPosition";
-import { setAxisFirstCut, setBoardHeight, setBoardWidth, setDisplacement, setPhaseNumber } from "../../redux/slices/cutterslice";
+import { setAxisFirstCut, setBoardHeight, setBoardWidth, setDisplacement, setMargin, setPhaseNumber } from "../../redux/slices/cutterslice";
 import './SandboxArea.css';
 import { DefaultParameters } from "../../common/parameters/DefaultParameters";
 import { DefaultTheme } from "../../theme/DefaultTheme";
@@ -25,7 +24,7 @@ let turnManager = new TurnManager();
 let turnToRectangleConverter = new TurnToRectangleConverter();
 export default function SandboxArea() {
 
-    const { boardWidth, boardHeight, displacement, phaseNumber, axisFirstCut } = useAppSelector(state => state.cutter);
+    const { boardWidth, boardHeight, displacement, phaseNumber, axisFirstCut, margin } = useAppSelector(state => state.cutter);
     const dispatcher = useAppDispatch();
 
     const theme = createTheme(DefaultTheme);
@@ -99,16 +98,15 @@ export default function SandboxArea() {
             return;
         }
 
-        var margin = 20;
         turn.executeCut(displacement, margin);
         var parts = turnToRectangleConverter.ConvertTurn(turn, margin, aspectRatio, startPointCanvas);
-        var newParts = Except(elementsToDraw,parts);
-        var newElem = Except(parts,elementsToDraw);
+        var newParts = Except(elementsToDraw, parts);
+        var newElem = Except(parts, elementsToDraw);
         setElementsToDraw(newParts.concat(newElem));
         UpdateStatusBar();
     }
 
-    function Except(firstArray: Rect[], secondArray: Rect[],): Rect[]{
+    function Except(firstArray: Rect[], secondArray: Rect[],): Rect[] {
         return firstArray.filter(element => {
             var partWithSamePosition = secondArray.filter(el => el.x === element.x && el.y === element.y)[0];
 
@@ -142,7 +140,8 @@ export default function SandboxArea() {
             DefaultDisplacement,
             DefaultBoardWidth,
             DefaultBoardHeight,
-            DefaultFirstCutAxis
+            DefaultFirstCutAxis,
+            DefaultMargin
         } = DefaultParameters;
 
         UpdateStatusBar();
@@ -153,6 +152,7 @@ export default function SandboxArea() {
         dispatcher(setBoardWidth(DefaultBoardWidth));
         dispatcher(setBoardHeight(DefaultBoardHeight));
         dispatcher(setAxisFirstCut(DefaultFirstCutAxis));
+        dispatcher(setMargin(DefaultMargin));
     }
 
     function CloseSnackBar(): void {

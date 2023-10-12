@@ -5,5 +5,6 @@ export class DefaultParameters {
     public static DefaultBoardHeight: number = 1850;
     public static DefaultPhaseNumber: number = 1;
     public static DefaultDisplacement: number = 0;
+    public static DefaultMargin: number = 10;
     public static DefaultFirstCutAxis: eAxis = eAxis.Horizontal;
 }
