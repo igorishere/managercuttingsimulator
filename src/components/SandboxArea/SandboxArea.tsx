@@ -18,7 +18,8 @@ import { DefaultTheme } from "../../theme/DefaultTheme";
 import createTheme from "@mui/material/styles/createTheme";
 import Canvas from "../Canvas/Canvas";
 import Rect from "../Canvas/Rect";
-import Board from "./CuttingPlanElements/Board";
+import CuttingPlanElement from "./CuttingPlanElements/CuttingPlanElement";
+import { ePlacementType } from "./CuttingPlanElements/ePlacementType";
 
 let turnManager = new TurnManager();
 let turnToRectangleConverter = new TurnToRectangleConverter();
@@ -28,14 +29,16 @@ export default function SandboxArea() {
     const dispatcher = useAppDispatch();
 
     const theme = createTheme(DefaultTheme);
-    useEffect(() => DefineBoardSize(), [boardWidth, boardHeight]);
     const [feedbackMessage, setFeedbackMessage] = useState("");
     const [openSnackBar, setOpenSnackbar] = useState(false);
     const [turnsCount, setTurnsCount] = useState(0);
+    const [partsCount, setPartsCount] = useState(0);
     const [cutsCount, setCutsCount] = useState(0);
     const [elementsToDraw, setElementsToDraw] = useState(Array<Rect>);
     const [aspectRatio, setAspectRatio] = useState(0);
     const [startPointCanvas, setStartPointCanvas] = useState({ X: 0, Y: 0 });
+    useEffect(() => DefineBoardSize(), [boardWidth, boardHeight]);
+    useEffect(() => UpdateStatusBar(), [elementsToDraw]);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const cuttingPlanCanvasWrapperReference = useRef<HTMLDivElement>(null);
@@ -65,9 +68,9 @@ export default function SandboxArea() {
             color: "#000",
             thickness: 1.3
         }
-        var parts = new Array<Rect>();
+        var parts = new Array<CuttingPlanElement>();
         setElementsToDraw(parts);
-        var board = new Board(rectWidth, rectHeight, X, Y, "#DFF1E6", lineOptions);
+        var board = new CuttingPlanElement(ePlacementType.Sheet, rectWidth, rectHeight, X, Y, "#DFF1E6", lineOptions);
         var newElements = [board];
         setElementsToDraw(newElements);
     }
@@ -75,6 +78,7 @@ export default function SandboxArea() {
     function UpdateStatusBar(): void {
         setTurnsCount(turnManager.GetUsedTurnsCount() ?? 0);
         setCutsCount(turnManager.GetCutsCount() ?? 0);
+        setPartsCount(elementsToDraw.filter(e => (e as CuttingPlanElement).elementType === ePlacementType.Part ?? 0).length);
     }
 
     function PerformNewCut(): void {
@@ -100,10 +104,28 @@ export default function SandboxArea() {
 
         turn.executeCut(displacement, margin);
         var parts = turnToRectangleConverter.ConvertTurn(turn, margin, aspectRatio, startPointCanvas);
-        var newParts = Except(elementsToDraw, parts);
-        var newElem = Except(parts, elementsToDraw);
-        setElementsToDraw(newParts.concat(newElem));
+        var newElementsToDraw = FilterParts(parts.concat(elementsToDraw));
+        setElementsToDraw(newElementsToDraw);
         UpdateStatusBar();
+    }
+
+
+    function FilterParts(firstArray: Rect[]) {
+
+        var groups = new Array<Rect[]>;
+
+        firstArray.forEach((element) => {
+            var g = groups.findIndex(e => e[0].x === element.x && e[0].y === element.y);
+
+            if (g === -1) {
+                groups.push([element]);
+
+            } else {
+                groups[g].push(element);
+            }
+        });
+
+        return groups.map((group, index, array) => group.sort((a, b) => a < b ? -1 : 1)[0]);
     }
 
     function Except(firstArray: Rect[], secondArray: Rect[],): Rect[] {
@@ -129,7 +151,7 @@ export default function SandboxArea() {
 
     function ClearCanvas(): void {
 
-        var board = elementsToDraw.filter((rect => rect instanceof Board));
+        var board = elementsToDraw.filter(rect => (rect as CuttingPlanElement).elementType === ePlacementType.Sheet);
 
         setElementsToDraw(board);
 
@@ -175,7 +197,7 @@ export default function SandboxArea() {
                         <Stack id="cuttingPlanStatusBar" direction="row" spacing={1}>
                             <Chip label={`Cuts: ${cutsCount}`} color="primary" />
                             <Chip label={`Turns: ${turnsCount}`} color="primary" />
-                            <Chip label="Parts: 9" color="primary" />
+                            <Chip label={`Parts: ${partsCount}`} color="primary" />
                         </Stack>
                         <div id="cuttingPlanCanvasWrapper" ref={cuttingPlanCanvasWrapperReference}>
                             <Canvas elements={elementsToDraw} />
