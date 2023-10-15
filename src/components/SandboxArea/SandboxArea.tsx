@@ -20,6 +20,7 @@ import Canvas from "../Canvas/Canvas";
 import Rect from "../Canvas/Rect";
 import CuttingPlanElement from "./CuttingPlanElements/CuttingPlanElement";
 import { ePlacementType } from "./CuttingPlanElements/ePlacementType";
+import { eAxis } from "../../common/cutter/eAxis";
 
 let turnManager = new TurnManager();
 let turnToRectangleConverter = new TurnToRectangleConverter();
@@ -91,7 +92,7 @@ export default function SandboxArea() {
         if (turn === undefined || turn === null) return;
 
         var { maxAcceptableDisplacement } = turn;
-        if (displacement >= maxAcceptableDisplacement) {
+        if (displacement + margin >= maxAcceptableDisplacement) {
 
             var feedbackMessage = maxAcceptableDisplacement <= 0
                 ? "There´s no free space to execute a new command."
@@ -104,13 +105,13 @@ export default function SandboxArea() {
 
         turn.executeCut(displacement, margin);
         var parts = turnToRectangleConverter.ConvertTurn(turn, margin, aspectRatio, startPointCanvas);
-        var newElementsToDraw = FilterParts(parts.concat(elementsToDraw));
+        var newElementsToDraw = FilterParts(parts.concat(elementsToDraw), turn.cutAxis);
         setElementsToDraw(newElementsToDraw);
         UpdateStatusBar();
     }
 
 
-    function FilterParts(firstArray: Rect[]) {
+    function FilterParts(firstArray: Rect[], cutAxis: eAxis) {
 
         var groups = new Array<Rect[]>;
 
@@ -119,35 +120,14 @@ export default function SandboxArea() {
 
             if (g === -1) {
                 groups.push([element]);
-
             } else {
                 groups[g].push(element);
             }
         });
 
-        return groups.map((group, index, array) => group.sort((a, b) => a < b ? -1 : 1)[0]);
+        return groups.map((group, index, array) => group.sort((a, b) => a.width < b.width ? -1 : 1)
+            .sort((a, b) => a.height < b.height ? -1 : 1)[0]);
     }
-
-    function Except(firstArray: Rect[], secondArray: Rect[],): Rect[] {
-        return firstArray.filter(element => {
-            var partWithSamePosition = secondArray.filter(el => el.x === element.x && el.y === element.y)[0];
-
-            if (partWithSamePosition) {
-
-                if (element.width === partWithSamePosition.width) {
-                    return element.height <= partWithSamePosition.height;
-                }
-
-                if (element.height === partWithSamePosition.height) {
-                    return element.width <= partWithSamePosition.width
-                }
-
-                return false;
-            }
-            return true;
-        });
-    }
-
 
     function ClearCanvas(): void {
 
