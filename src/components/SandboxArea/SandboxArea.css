@@ -1,5 +1,7 @@
 #cuttingPlanWrapper {
     padding: 8px;
+    position: relative;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7,6 +9,7 @@
 }
 
 #cuttingPlanCanvasWrapper {
+    padding: 3px;
     height: calc(100vh - 250px);
     width: 100%;
     border: 1px solid #929292;
