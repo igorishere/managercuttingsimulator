@@ -116,12 +116,14 @@ export default function SandboxArea() {
         var groups = new Array<Rect[]>;
 
         firstArray.forEach((element) => {
-            var g = groups.findIndex(e => e[0].x === element.x && e[0].y === element.y);
+            var elementsWithSamePosition = groups.findIndex(e =>
+                parseFloat(e[0].x.toFixed(2)) === parseFloat(element.x.toFixed(2)) &&
+                parseFloat(e[0].y.toFixed(2)) === parseFloat(element.y.toFixed(2)));
 
-            if (g === -1) {
+            if (elementsWithSamePosition === -1) {
                 groups.push([element]);
             } else {
-                groups[g].push(element);
+                groups[elementsWithSamePosition].push(element);
             }
         });
 
