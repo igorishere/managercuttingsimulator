@@ -166,8 +166,9 @@ export default function SandboxArea() {
     return (
         <Box
             sx={{
+                position: 'relative',
                 bgcolor: '#E7E7E7',
-                height: '92%',
+                height: '100vh',
                 padding: '20px',
             }}>
             <Grid
