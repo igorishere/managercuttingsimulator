@@ -1,4 +1,4 @@
-import { List, ListSubheader, ListItem, MenuItem } from "@mui/material";
+import { List, ListSubheader, ListItem, MenuItem, ButtonGroup, Typography } from "@mui/material";
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -7,6 +7,8 @@ import { setBoardWidth, setBoardHeight, setDisplacement, setPhaseNumber, setAxis
 import { eAxis, eAxisStrings } from "../../common/cutter/eAxis";
 import { useEffect, useMemo, useState } from "react";
 import ParametersFormProps from "./ParametersFormProps";
+import RemoveIcon from "@mui/icons-material/Remove";
+import AddIcon from "@mui/icons-material/Add";
 
 const subheader = (<ListSubheader>Parameters</ListSubheader>);
 
@@ -141,17 +143,6 @@ export default function ParametersForm(props: ParametersFormProps) {
                 <ListItem>
                     <TextField
                         sx={{ height: '40px' }}
-                        label="Displacement"
-                        variant="outlined"
-                        size="small"
-                        defaultValue={displacementState}
-                        value={displacementState}
-                        onChange={(e) => FormatValueBeforeSetState(e.target.value, setDisplacementState)}
-                    />
-                </ListItem>
-                <ListItem>
-                    <TextField
-                        sx={{ height: '40px' }}
                         label="Tool thickness"
                         variant="outlined"
                         size="small"
@@ -163,13 +154,40 @@ export default function ParametersForm(props: ParametersFormProps) {
                 <ListItem>
                     <TextField
                         sx={{ height: '40px' }}
-                        label="Phase number"
+                        label="Displacement"
                         variant="outlined"
                         size="small"
-                        defaultValue={phaseNumber}
-                        value={phaseNumber}
-                        onChange={(e) => dispatcher(setPhaseNumber(parseInt(e.target.value)))}
+                        defaultValue={displacementState}
+                        value={displacementState}
+                        onChange={(e) => FormatValueBeforeSetState(e.target.value, setDisplacementState)}
                     />
+                </ListItem>
+                <ListItem style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'start'
+                }}>
+                    <Typography fontSize={12} marginLeft={3} color={'#666'}>
+                        Phase number
+                    </Typography>
+                    <ButtonGroup>
+                        <Button onClick={(e) => dispatcher(setPhaseNumber(phaseNumber - 1))}>
+                            <RemoveIcon fontSize="small" />
+                        </Button>
+                        <Typography
+                            style={{
+                                width: '50px',
+                                border: '0.5px solid #0E8388',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                            {phaseNumber}
+                        </Typography>
+                        <Button onClick={(e) => dispatcher(setPhaseNumber(phaseNumber + 1))}>
+                            <AddIcon fontSize="small" />
+                        </Button>
+                    </ButtonGroup>
                 </ListItem>
                 <ListItem>
                     <Stack spacing={2} direction="row">
