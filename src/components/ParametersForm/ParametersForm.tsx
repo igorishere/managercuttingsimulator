@@ -10,7 +10,6 @@ import ParametersFormProps from "./ParametersFormProps";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 
-const subheader = (<ListSubheader>Parameters</ListSubheader>);
 
 export default function ParametersForm(props: ParametersFormProps) {
 
@@ -94,9 +93,14 @@ export default function ParametersForm(props: ParametersFormProps) {
         setValue(value);
     }
 
+    const subheader = (
+        <ListSubheader color="primary">
+            <Typography variant='subtitle1'>Parameters</Typography>
+        </ListSubheader>);
+
     return (
         <>
-            <List subheader={subheader}>
+            <List subheader={subheader} style={{paddingTop:'20px'}} > 
                 <ListItem>
                     <TextField
                         sx={{ height: '40px', width: '150px' }}

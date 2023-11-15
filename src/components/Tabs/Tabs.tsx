@@ -4,8 +4,7 @@ import Tab from '@mui/material/Tab';
 import { useState } from "react";
 import SandboxArea from "../SandboxArea/SandboxArea";
 import TabContent from './TabContent';
-import { Typography } from "@mui/material";
-import ImagesearchRollerIcon from '@mui/icons-material/ImagesearchRoller';
+import FileReadingArea from "../SandboxArea/FileReadingArea/FileReadingArea";
 
 export default function TabsControl() {
     var [indexSelectedTab, setIndexSelectedTab] = useState(1);
@@ -22,22 +21,8 @@ export default function TabsControl() {
                     <Tab label="Sandbox area" />
                 </Tabs>
             </Box>
-            <TabContent index={0} currentIndex={indexSelectedTab}>
-                <Box sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    marginTop: '150px'
-                }}>
-                    <Typography variant={"h5"}>
-                        Comming soon!
-                    </Typography>
-                    <ImagesearchRollerIcon fontSize="large" />
-                </Box>
-            </TabContent>
-            <TabContent index={1} currentIndex={indexSelectedTab}>
-                <SandboxArea />
-            </TabContent>
+            <TabContent index={0} currentIndex={indexSelectedTab} children={<FileReadingArea />} />
+            <TabContent index={1} currentIndex={indexSelectedTab} children={<SandboxArea />}/>
         </>
     );
 };
