@@ -150,13 +150,7 @@ export default function SandboxArea() {
 
         UpdateStatusBar();
         DefineBoardSize();
-
-        dispatcher(setPhaseNumber(DefaultPhaseNumber));
-        dispatcher(setDisplacement(DefaultDisplacement));
-        dispatcher(setBoardWidth(DefaultBoardWidth));
-        dispatcher(setBoardHeight(DefaultBoardHeight));
-        dispatcher(setAxisFirstCut(DefaultFirstCutAxis));
-        dispatcher(setMargin(DefaultMargin));
+ 
     }
 
     function CloseSnackBar(): void {
